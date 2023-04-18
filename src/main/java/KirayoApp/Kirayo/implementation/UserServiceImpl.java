@@ -11,12 +11,11 @@ import KirayoApp.Kirayo.returnStatus.LoginStatus;
 import KirayoApp.Kirayo.returnStatus.ResponseStatus;
 import KirayoApp.Kirayo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Base64;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -91,7 +90,7 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
-    public LoginStatus login(UserCredentialsDto userCredentialsDto) {
+    public LoginStatus login(UserCredentialsDto userCredentialsDto) throws IOException {
         System.out.println(userCredentialsDto.getEmail());
         UserCredentials userCredentials=new UserCredentials();
         UserDetails userDetails3=new UserDetails();
@@ -105,12 +104,12 @@ public class UserServiceImpl implements UserService
         if(userDetails2.isPresent()){
             userDetails3=userDetails2.get();
         }
-       ByteArrayResource resource = new ByteArrayResource(userDetails3.getImage());
-        String userImageBase64 = Base64.getEncoder().encodeToString(resource.getByteArray());
-        userDetails3.setImage(null);
+//       ByteArrayResource resource = new ByteArrayResource(userDetails3.getImage());
+//        String userImageBase64 = Base64.getEncoder().encodeToString(resource.getByteArray());
+//        userDetails3.setImage(null);
         Map<String,Object> claims = new HashMap<>();
         claims.put("UserDetails",userDetails3);
-        claims.put("UserImage",userImageBase64);
+
         final String jwt =jwtUtill.generateTokenforlogin(userDetails,claims);
         LoginStatus loginStatus=new LoginStatus();
         loginStatus.setJwt(jwt);

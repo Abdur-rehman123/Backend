@@ -2,8 +2,9 @@ package KirayoApp.Kirayo.controller;
 
 import KirayoApp.Kirayo.dto.SignupDto;
 import KirayoApp.Kirayo.dto.UserCredentialsDto;
-import KirayoApp.Kirayo.model.UserDetails;
+import KirayoApp.Kirayo.model.UserImage;
 import KirayoApp.Kirayo.repository.UserDetailsRepository;
+import KirayoApp.Kirayo.repository.UserImageRepository;
 import KirayoApp.Kirayo.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @RestController
 public class UserController {
@@ -26,6 +28,8 @@ public class UserController {
     UserService userService;
     @Autowired
     UserDetailsRepository userDetailsRepository;
+    @Autowired
+    UserImageRepository userImageRepository;
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
@@ -40,24 +44,34 @@ public class UserController {
 
     }
     @RequestMapping(value="/image",method= RequestMethod.GET)
-    ResponseEntity<?> register(){
-        System.out.println("My name is Abdur Rehman");
-        UserDetails userDetails;
+    ResponseEntity<?> register(@RequestParam String id){
+        System.out.println(id);
+        UserImage userImage;
 //        System.out.println(id);
-        userDetails=userDetailsRepository.findById((long) 13).orElseThrow();
-        System.out.println(userDetails.getFullname());
-        ByteArrayResource resource = new ByteArrayResource(userDetails.getImage());
-        return ResponseEntity.ok().contentLength(userDetails.getImage().length)
+        userImage=userImageRepository.findByImageId(id);
+
+        ByteArrayResource resource = new ByteArrayResource(userImage.getImage());
+        return ResponseEntity.ok().contentLength(userImage.getImage().length)
                 .contentType(MediaType.IMAGE_PNG)
                 .body(resource);
 
     }
+    private String generateImageId() {
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString();
+    }
 
     //SIGNUP consumes = "multipart/form-data"
     @RequestMapping(value="/signup",method= RequestMethod.POST)
-    ResponseEntity<?> saveUser(@RequestParam("signupDto") String signupDto, @RequestParam("image")MultipartFile image){
+    ResponseEntity<?> saveUser(@RequestParam("signupDto") String signupDto, @RequestParam("image")MultipartFile image) throws IOException {
 
         ObjectMapper objectMapper=new ObjectMapper();
+        String imageId = generateImageId();
+        UserImage userImage = new UserImage();
+        userImage.setImageId(imageId);
+        userImageRepository.save(userImage);
+
+
 //        try {
 //            signupDto.getUserDetailsDto().setImage(signupDto.getImage().getBytes());
 //        } catch (IOException e) {
@@ -67,7 +81,11 @@ public class UserController {
         try {
             signupDto1 = objectMapper.readValue(signupDto, SignupDto.class);
             if(!image.isEmpty()){
-                signupDto1.getUserDetailsDto().setImage(image.getBytes());
+                signupDto1.getUserDetailsDto().setImage(userImage.getImageId());
+                userImage.setImage(image.getBytes());
+            }
+            else{
+                userImage.setImage(null);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

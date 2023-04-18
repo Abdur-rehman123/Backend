@@ -23,9 +23,9 @@ public class UserDetails {
     private Date dob;
 
 
-    @Lob
+
     @Column(name="user_image")
-    private byte[] image;
+    private String image;
 
 
 }

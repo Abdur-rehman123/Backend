@@ -22,7 +22,7 @@ public class UserDetailsDto {
     private Date dob;
 
 
-    private byte[] image;
+    private String image;
 
     // getters and setters
 }
