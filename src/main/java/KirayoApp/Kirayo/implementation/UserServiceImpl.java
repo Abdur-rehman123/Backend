@@ -5,8 +5,10 @@ import KirayoApp.Kirayo.dto.UserDetailsDto;
 import KirayoApp.Kirayo.filter.JwtUtill;
 import KirayoApp.Kirayo.model.UserCredentials;
 import KirayoApp.Kirayo.model.UserDetails;
+import KirayoApp.Kirayo.model.UserImage;
 import KirayoApp.Kirayo.repository.UserCredentialsRepository;
 import KirayoApp.Kirayo.repository.UserDetailsRepository;
+import KirayoApp.Kirayo.repository.UserImageRepository;
 import KirayoApp.Kirayo.returnStatus.LoginStatus;
 import KirayoApp.Kirayo.returnStatus.ResponseStatus;
 import KirayoApp.Kirayo.service.UserService;
@@ -14,11 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService
@@ -26,9 +30,13 @@ public class UserServiceImpl implements UserService
     @Autowired
     private UserCredentialsRepository userCredentialsRepository;
     @Autowired
-    private UserDetailsRepository userDetailsRepository;
+    UserImageRepository userImageRepository;
     @Autowired
     UserDetailsService userDetailsService;
+
+    @Autowired
+    private UserDetailsRepository userDetailsRepository;
+
     @Autowired
     JwtUtill jwtUtill;
 //    @Autowired
@@ -64,28 +72,50 @@ public class UserServiceImpl implements UserService
 
         return responseStatus;
     }
+    private String generateImageId() {
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString();
+    }
 
     @Override
-    public ResponseStatus signup(UserDetailsDto userDetailsDto, UserCredentialsDto userCredentialsDto) {
-        UserCredentials userCredentials=new UserCredentials();
-        userCredentials.setEmail(userCredentialsDto.getEmail());
-        userCredentials.setPhoneNumber(userCredentialsDto.getPhoneNumber());
-        userCredentials.setPassword(new BCryptPasswordEncoder().encode(userCredentialsDto.getPassword()));
-        userCredentials.setIsActive(true);
-        userCredentialsRepository.save(userCredentials);
+    public ResponseStatus signup(UserDetailsDto userDetailsDto, UserCredentialsDto userCredentialsDto, MultipartFile image) {
+        ResponseStatus responseStatus=new ResponseStatus();
+        Optional<UserCredentials> userCredentials2;
+        userCredentials2=userCredentialsRepository.findByEmail(userCredentialsDto.getEmail());
+        if(userCredentials2.isEmpty())
+        {
+            String imageId = generateImageId();
+            UserImage userImage = new UserImage();
+            userImage.setImageId(imageId);
+            userImageRepository.save(userImage);
 
-        UserDetails userDetails=new UserDetails();
-        userDetails.setCity(userDetailsDto.getCity());
-        userDetails.setFullname(userDetailsDto.getFullName());
-        userDetails.setDob(userDetailsDto.getDob());
-        userDetails.setImage(userDetailsDto.getImage());
-        userDetails.setUserid(userCredentials.getUserId());
-        userDetailsRepository.save(userDetails);
 
-        ResponseStatus responseStatus = new ResponseStatus();
-        responseStatus.setStatus(true);
-        responseStatus.setMessage("SignUp Successful");
+
+            UserCredentials userCredentials=new UserCredentials();
+            userCredentials.setEmail(userCredentialsDto.getEmail());
+            userCredentials.setPhoneNumber(userCredentialsDto.getPhoneNumber());
+            userCredentials.setPassword(new BCryptPasswordEncoder().encode(userCredentialsDto.getPassword()));
+            userCredentials.setIsActive(true);
+            userCredentialsRepository.save(userCredentials);
+
+            UserDetails userDetails=new UserDetails();
+            userDetails.setCity(userDetailsDto.getCity());
+            userDetails.setFullname(userDetailsDto.getFullName());
+            userDetails.setDob(userDetailsDto.getDob());
+            userDetails.setImage(userImage.getImageId());
+            userDetails.setUserid(userCredentials.getUserId());
+            userDetailsRepository.save(userDetails);
+
+
+            responseStatus.setStatus(true);
+            responseStatus.setMessage("SignUp Successful");
+        }
+        else{
+            responseStatus.setStatus(false);
+            responseStatus.setMessage("SignUp UnSuccessful");
+        }
         return responseStatus;
+
 
     }
 

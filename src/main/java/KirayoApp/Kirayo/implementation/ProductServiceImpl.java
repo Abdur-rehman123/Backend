@@ -8,12 +8,12 @@ import KirayoApp.Kirayo.repository.ProductUploadRepository;
 import KirayoApp.Kirayo.repository.UserCredentialsRepository;
 import KirayoApp.Kirayo.repository.UserDetailsRepository;
 import KirayoApp.Kirayo.returnStatus.ResponseStatus;
-import KirayoApp.Kirayo.service.ProductUploadService;
+import KirayoApp.Kirayo.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ProductUploadServiceImpl implements ProductUploadService {
+public class ProductServiceImpl implements ProductService {
     @Autowired
     ProductUploadRepository productUploadRepository;
     @Autowired
@@ -37,5 +37,25 @@ public class ProductUploadServiceImpl implements ProductUploadService {
         responseStatus.setStatus(true);
         responseStatus.setMessage("Product Uploaded Successfully");
         return responseStatus;
+    }
+
+    @Override
+    public ResponseStatus saveProduct(ProductUploadDto productUploadDto) {
+        return null;
+    }
+
+    @Override
+    public ResponseStatus getAllProducts() {
+        return null;
+    }
+
+    @Override
+    public ResponseStatus getUserProducts() {
+        return null;
+    }
+
+    @Override
+    public ResponseStatus getUserSavedProducts() {
+        return null;
     }
 }

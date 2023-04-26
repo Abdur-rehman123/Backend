@@ -1,7 +1,7 @@
 package KirayoApp.Kirayo.security;
 
 import KirayoApp.Kirayo.filter.JwtRequestFilter;
-import KirayoApp.Kirayo.implementation.MyUserDetailService;
+import KirayoApp.Kirayo.implementation.MyUserDetailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,7 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
     @Autowired
     private JwtRequestFilter jwtRequestFilter;
     @Autowired
-    private MyUserDetailService myUserDetailService;
+    private MyUserDetailServiceImpl myUserDetailService;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
