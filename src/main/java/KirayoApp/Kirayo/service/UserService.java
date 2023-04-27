@@ -12,7 +12,7 @@ public interface UserService {
 
     ResponseStatus verify(UserCredentialsDto userCredentialsDto);
 
-    ResponseStatus signup(UserDetailsDto userDetailsDto, UserCredentialsDto userCredentialsDto, MultipartFile image);
+    ResponseStatus signup(UserDetailsDto userDetailsDto, UserCredentialsDto userCredentialsDto, MultipartFile image) throws IOException;
 
     LoginStatus login(UserCredentialsDto userCredentialsDto) throws IOException;
     ResponseStatus forgetPassword(UserCredentialsDto userCredentialsDto);

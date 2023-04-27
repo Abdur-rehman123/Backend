@@ -1,7 +1,11 @@
 package KirayoApp.Kirayo.dto;
 
 public class ProductUploadDto {
-
+    private String email;
+    private String title;
+    private String description;
+    private String category;
+    private double price;
     public String getEmail() {
         return email;
     }
@@ -9,12 +13,6 @@ public class ProductUploadDto {
     public void setEmail(String email) {
         this.email = email;
     }
-
-    private String email;
-    private String title;
-    private String description;
-    private String category;
-    private double price;
 
     public String getTitle() {
         return title;

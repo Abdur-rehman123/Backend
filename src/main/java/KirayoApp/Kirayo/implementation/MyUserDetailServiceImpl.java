@@ -21,10 +21,16 @@ public class MyUserDetailServiceImpl implements UserDetailsService {
 //    }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
+
         System.out.println("IN USER DETAIL SERVICE of its function 'loadUserByUsername'");
-        Optional<UserCredentials> user=userCredentialsRepository.findByEmail(email);
-        user.orElseThrow(() -> new UsernameNotFoundException("Not Found: " + email) );
+        System.out.println(id);
+
+        Optional<UserCredentials> user=userCredentialsRepository.findByEmail(id);
+        if(user.isEmpty()){
+            user=userCredentialsRepository.findByPhoneNumber(id);
+        }
+        user.orElseThrow(() -> new UsernameNotFoundException("Invalid Credentials"));
 //        System.out.println("I crossed one hindrance");
         return user.map(MyUserDetails::new).get();
     }

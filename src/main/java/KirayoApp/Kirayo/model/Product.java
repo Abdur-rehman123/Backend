@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "product")
@@ -38,6 +40,17 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private UserDetails user;
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ProductImages> productImages = new HashSet<>();
+    public void addImage(ProductImages image) {
+        productImages.add(image);
+        image.setProduct(this);
+    }
+
+    public void removeImage(ProductImages image) {
+        productImages.remove(image);
+        image.setProduct(null);
+    }
 
     // Constructors, getters and setters
 }

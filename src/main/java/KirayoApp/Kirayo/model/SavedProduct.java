@@ -1,11 +1,16 @@
 package KirayoApp.Kirayo.model;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "saved_product")
+@Getter
+@Setter
 public class SavedProduct {
 
     @Id

@@ -1,11 +1,15 @@
 package KirayoApp.Kirayo.model;
 
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name="ProductImages")
-
+@Getter
+@Setter
 public class ProductImages {
 
     @Id
@@ -17,7 +21,7 @@ public class ProductImages {
 
     @Column(name="image")
     private byte[] image;
-    @ManyToOne(fetch=FetchType.LAZY)
+    @ManyToOne(fetch=FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name="productId", nullable = false)
     private Product product;
 

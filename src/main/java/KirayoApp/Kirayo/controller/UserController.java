@@ -64,28 +64,11 @@ public class UserController {
     //SIGNUP consumes = "multipart/form-data"
     @RequestMapping(value="/user/signup",method= RequestMethod.POST)
     ResponseEntity<?> saveUser(@RequestParam("signupDto") String signupDto, @RequestParam("image")MultipartFile image) throws IOException {
-
         ObjectMapper objectMapper=new ObjectMapper();
-
-
-
-
-
-////        try {
-////            signupDto.getUserDetailsDto().setImage(signupDto.getImage().getBytes());
-////        } catch (IOException e) {
-////            throw new RuntimeException(e);
-////        }
         SignupDto signupDto1= null;
         try {
             signupDto1 = objectMapper.readValue(signupDto, SignupDto.class);
-//            if(!image.isEmpty()){
-//                signupDto1.getUserDetailsDto().setImage(userImage.getImageId());
-//                userImage.setImage(image.getBytes());
-//            }
-//            else{
-//                userImage.setImage(null);
-//            }
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -96,10 +79,19 @@ public class UserController {
 
     @RequestMapping(value="/user/login",method= RequestMethod.POST)
     ResponseEntity<?> loginUser(@RequestBody UserCredentialsDto userCredentialsDto) throws Exception     {
-        System.out.println(userCredentialsDto.getEmail());
+        String id;
+        if(userCredentialsDto.getEmail()!=null){
+            id=userCredentialsDto.getEmail();
+        }
+        else if (userCredentialsDto.getPhoneNumber()!=null){
+            id=userCredentialsDto.getPhoneNumber();
+        }
+        else{
+            id=null;
+        }
         try {
 
-            SecurityContextHolder.getContext().setAuthentication(authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userCredentialsDto.getEmail(), userCredentialsDto.getPassword())));
+            SecurityContextHolder.getContext().setAuthentication(authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(id, userCredentialsDto.getPassword())));
 
 
         }
@@ -107,7 +99,7 @@ public class UserController {
 
             ResponseStatus responseStatus = new ResponseStatus();
             responseStatus.setStatus(false);
-            responseStatus.setMessage("Invalid Credentials");
+            responseStatus.setMessage("InvalidCredentials");
             return ResponseEntity.ok(responseStatus);
         }
 
