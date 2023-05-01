@@ -47,7 +47,7 @@ public class UserController {
 
     }
     @RequestMapping(value="/user/image",method= RequestMethod.GET)
-    ResponseEntity<?> register(@RequestParam String id){
+    ResponseEntity<?> userimage(@RequestParam String id){
         System.out.println(id);
         UserImage userImage;
 //        System.out.println(id);

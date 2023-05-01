@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -30,6 +31,9 @@ public class Product {
     @Column(name = "price")
     private double price;
 
+    @Column(name = "timestamp")
+    private Date timestamp;
+
 
  /*   @Column(name = "user_id")
     private Long userId;*/
@@ -41,13 +45,13 @@ public class Product {
     @JoinColumn(name = "user_id", nullable = false)
     private UserDetails user;
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ProductImages> productImages = new HashSet<>();
-    public void addImage(ProductImages image) {
+    private Set<ProductImage> productImages = new HashSet<>();
+    public void addImage(ProductImage image) {
         productImages.add(image);
         image.setProduct(this);
     }
 
-    public void removeImage(ProductImages image) {
+    public void removeImage(ProductImage image) {
         productImages.remove(image);
         image.setProduct(null);
     }

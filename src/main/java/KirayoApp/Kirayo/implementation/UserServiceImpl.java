@@ -155,7 +155,7 @@ public class UserServiceImpl implements UserService
         final String jwt =jwtUtill.generateTokenforlogin(userDetails,claims);
         LoginStatus loginStatus=new LoginStatus();
         loginStatus.setJwt(jwt);
-
+        loginStatus.setDob(userDetails1.getDob());
         return loginStatus;
 
  }

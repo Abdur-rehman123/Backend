@@ -3,13 +3,17 @@ package KirayoApp.Kirayo.controller;
 
 import KirayoApp.Kirayo.dto.ProductUploadDto;
 import KirayoApp.Kirayo.dto.SavedProductDto;
+import KirayoApp.Kirayo.model.ProductImage;
+import KirayoApp.Kirayo.repository.ProductImagesRepository;
+import KirayoApp.Kirayo.returnStatus.ResponseStatus;
 import KirayoApp.Kirayo.service.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import KirayoApp.Kirayo.returnStatus.ResponseStatus;
 
 import java.io.IOException;
 
@@ -17,6 +21,8 @@ import java.io.IOException;
 public class ProductController {
     @Autowired
     ProductService productService;
+    @Autowired
+    ProductImagesRepository productImagesRepository;
 
     @RequestMapping(value="/product/productupload", method= RequestMethod.POST)
     ResponseEntity<?> productUpload(@RequestParam("productUploadDto") String productUploadDto,@RequestParam("images") MultipartFile[] images) throws IOException {
@@ -43,16 +49,29 @@ public class ProductController {
 
         return ResponseEntity.ok(productService.getAllProducts());
     }
+    @RequestMapping(value="/product/image",method= RequestMethod.GET)
+    ResponseEntity<?> productimage(@RequestParam String id){
+
+        ProductImage productImage;
+
+        productImage=productImagesRepository.findByImageId(id);
+
+        ByteArrayResource resource = new ByteArrayResource(productImage.getImage());
+        return ResponseEntity.ok().contentLength(productImage.getImage().length)
+                .contentType(MediaType.IMAGE_PNG)
+                .body(resource);
+
+    }
 
     @RequestMapping(value="/product/getuserproducts", method= RequestMethod.GET)
-    ResponseEntity<?> getUserProducts(){
+    ResponseEntity<?> getUserProducts(@RequestParam("email") String email){
 
-        return ResponseEntity.ok(productService.getUserProducts());
+        return ResponseEntity.ok(productService.getUserProducts(email));
     }
     @RequestMapping(value="/product/getusersavedproducts", method= RequestMethod.GET)
-    ResponseEntity<?> getUserSavedProducts(){
+    ResponseEntity<?> getUserSavedProducts(@RequestParam("email") String email){
 
-        return ResponseEntity.ok(productService.getUserSavedProducts());
+        return ResponseEntity.ok(productService.getUserSavedProducts(email));
     }
 
 

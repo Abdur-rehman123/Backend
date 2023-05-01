@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Table(name="ProductImages")
 @Getter
 @Setter
-public class ProductImages {
+public class ProductImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

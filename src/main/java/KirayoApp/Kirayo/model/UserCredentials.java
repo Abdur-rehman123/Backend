@@ -1,6 +1,8 @@
 package KirayoApp.Kirayo.model;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
@@ -8,6 +10,8 @@ import javax.persistence.*;
 @Data
 //@Table(name="user_credentials")
 @Table(name = "user_credentials")
+@Getter
+@Setter
 public class UserCredentials {
 
     @Id

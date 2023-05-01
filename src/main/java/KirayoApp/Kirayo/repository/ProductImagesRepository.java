@@ -1,7 +1,11 @@
 package KirayoApp.Kirayo.repository;
 
-import KirayoApp.Kirayo.model.ProductImages;
+import KirayoApp.Kirayo.model.ProductImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ProductImagesRepository extends JpaRepository<ProductImages,Long> {
+import javax.transaction.Transactional;
+
+public interface ProductImagesRepository extends JpaRepository<ProductImage,Long> {
+    @Transactional
+    ProductImage findByImageId(String imageId);
 }
