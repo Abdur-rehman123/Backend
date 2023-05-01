@@ -4,8 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 public class ProductsResponse {
-    private Boolean status;
-    private String message;
+
     private String title;
     private String description;
     private String category;
@@ -16,21 +15,7 @@ public class ProductsResponse {
     private List<String> imageids;
 
 
-    public Boolean getStatus() {
-        return status;
-    }
 
-    public void setStatus(Boolean status) {
-        this.status = status;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
 
     public String getTitle() {
         return title;

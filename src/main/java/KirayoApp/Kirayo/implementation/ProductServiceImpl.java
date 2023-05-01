@@ -5,6 +5,7 @@ import KirayoApp.Kirayo.dto.ProductUploadDto;
 import KirayoApp.Kirayo.dto.SavedProductDto;
 import KirayoApp.Kirayo.model.*;
 import KirayoApp.Kirayo.repository.*;
+import KirayoApp.Kirayo.returnStatus.ProductStatus;
 import KirayoApp.Kirayo.returnStatus.ProductsResponse;
 import KirayoApp.Kirayo.returnStatus.ResponseStatus;
 import KirayoApp.Kirayo.service.ProductService;
@@ -116,7 +117,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductsResponse> getAllProducts() {
+    public ProductStatus getAllProducts() {
+        ProductStatus productStatus=new ProductStatus();
 
        List<Product> products;
        products=productRepository.findAll();
@@ -139,9 +141,10 @@ public class ProductServiceImpl implements ProductService {
                    imageIds.add(productImage.getImageId());
                }
                productsResponse.setImageids(imageIds);
-               productsResponse.setStatus(true);
-               productsResponse.setMessage("Product Found");
                productsResponses.add(productsResponse);
+               productStatus.setProductsResponse(productsResponses);
+               productStatus.setStatus(true);
+               productStatus.setMessage("Product Found");
            }
        }
 //        ArrayList<Set<ProductImages>> productImages=new ArrayList<>;
@@ -154,20 +157,22 @@ public class ProductServiceImpl implements ProductService {
 
 
 
-        return productsResponses;
+        return productStatus;
     }
 
     @Override
-    public List<ProductsResponse> getUserProducts(String email) {
-        List<ProductsResponse> productsResponses=new ArrayList<>();
+    public ProductStatus getUserProducts(String email) {
+        ProductStatus productStatus=new ProductStatus();
+
         try{
+            List<ProductsResponse> productsResponses=new ArrayList<>();
             List<Product> products;
             products=productRepository.findAllProductsByUserName(email).orElseThrow(() -> new NoSuchElementException("No Product Found"));
             if(products.isEmpty()){
                 ProductsResponse productsResponse=new ProductsResponse();
                 System.out.println("No product Found");
-                productsResponse.setStatus(false);
-                productsResponse.setMessage("No product Found");
+                productStatus.setStatus(false);
+                productStatus.setMessage("No product Found");
                 productsResponses.add(productsResponse);
             }
             for(Product product : products){
@@ -188,28 +193,31 @@ public class ProductServiceImpl implements ProductService {
                         imageIds.add(productImage.getImageId());
                     }
                     productsResponse.setImageids(imageIds);
-                    productsResponse.setStatus(true);
-                    productsResponse.setMessage("Product Found");
                     productsResponses.add(productsResponse);
+                    productStatus.setProductsResponse(productsResponses);
+                    productStatus.setStatus(true);
+                    productStatus.setMessage("Product Found");
 
                 }
             }
         }
         catch (NoSuchElementException e) {
-            ProductsResponse productsResponse=new ProductsResponse();
+
             System.out.println("No product Found");
-            productsResponse.setStatus(false);
-            productsResponse.setMessage(e.getMessage());
-            productsResponses.add(productsResponse);
+            productStatus.setStatus(false);
+            productStatus.setMessage(e.getMessage());
+
         }
 
-        return productsResponses;
+        return productStatus;
     }
 
     @Override
-    public List<ProductsResponse>  getUserSavedProducts(String email) {
-        List<ProductsResponse> productsResponses=new ArrayList<>();
+    public ProductStatus  getUserSavedProducts(String email) {
+        ProductStatus productStatus=new ProductStatus();
+
         try{
+            List<ProductsResponse> productsResponses=new ArrayList<>();
             List<Product> products;
             products=savedProductRepository.findAllSavedProductsByUserName(email).orElseThrow(() -> new NoSuchElementException("No Product Found"));
 
@@ -231,20 +239,22 @@ public class ProductServiceImpl implements ProductService {
                         imageIds.add(productImage.getImageId());
                     }
                     productsResponse.setImageids(imageIds);
-                    productsResponse.setStatus(true);
-                    productsResponse.setMessage("Product Found");
                     productsResponses.add(productsResponse);
+                    productStatus.setProductsResponse(productsResponses);
+                    productStatus.setStatus(true);
+                    productStatus.setMessage("Product Found");
 
                 }
             }
         }
         catch (NoSuchElementException e) {
-            ProductsResponse productsResponse=new ProductsResponse();
-            productsResponse.setStatus(false);
-            productsResponse.setMessage(e.getMessage());
-            productsResponses.add(productsResponse);
+
+            System.out.println("No product Found");
+            productStatus.setStatus(false);
+            productStatus.setMessage(e.getMessage());
+
         }
 
-        return productsResponses;
+        return productStatus;
     }
 }
