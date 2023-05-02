@@ -126,6 +126,8 @@ public class ProductServiceImpl implements ProductService {
        for(Product product : products){
            if(product.getProductStatus()){
                ProductsResponse productsResponse = new ProductsResponse();
+               UserCredentials userCredentials= userCredentialsRepository.findById(product.getUser().getUserid()).orElseThrow();
+               productsResponse.setEmail(userCredentials.getEmail());
                productsResponse.setTitle(product.getTitle());
                productsResponse.setDescription(product.getDescription());
                productsResponse.setCategory(product.getCategory());
