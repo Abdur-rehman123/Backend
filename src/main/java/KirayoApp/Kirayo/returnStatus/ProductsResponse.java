@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 public class ProductsResponse {
-
+    private String email;
     private String title;
     private String description;
     private String category;
@@ -16,7 +16,13 @@ public class ProductsResponse {
 
 
 
+    public String getEmail() {
+        return email;
+    }
 
+    public void setEmail(String email) {
+        this.email = email;
+    }
     public String getTitle() {
         return title;
     }

@@ -178,6 +178,8 @@ public class ProductServiceImpl implements ProductService {
             for(Product product : products){
                 if(product.getProductStatus()){
                     ProductsResponse productsResponse = new ProductsResponse();
+                    UserCredentials userCredentials= userCredentialsRepository.findById(product.getUser().getUserid()).orElseThrow();
+                    productsResponse.setEmail(userCredentials.getEmail());
                     productsResponse.setTitle(product.getTitle());
                     productsResponse.setDescription(product.getDescription());
                     productsResponse.setCategory(product.getCategory());
@@ -216,44 +218,44 @@ public class ProductServiceImpl implements ProductService {
     public ProductStatus  getUserSavedProducts(String email) {
         ProductStatus productStatus=new ProductStatus();
 
-        try{
+//        try{
             List<ProductsResponse> productsResponses=new ArrayList<>();
-            List<Product> products;
+            List<SavedProduct> products;
             products=savedProductRepository.findAllSavedProductsByUserName(email).orElseThrow(() -> new NoSuchElementException("No Product Found"));
 
-            for(Product product : products){
-                if(product.getProductStatus()){
+            for(SavedProduct product : products){
+//                if(product.getProductStatus()){
                     ProductsResponse productsResponse = new ProductsResponse();
-                    productsResponse.setTitle(product.getTitle());
-                    productsResponse.setDescription(product.getDescription());
-                    productsResponse.setCategory(product.getCategory());
-                    productsResponse.setPrice(product.getPrice());
-                    productsResponse.setTimeStamp(product.getTimestamp());
-                    ProductLocation productLocation= productLocationRepository.findByProductProductId(product.getProductId());
-                    productsResponse.setLatitude(productLocation.getLatitude());
-                    productsResponse.setLongitude(productLocation.getLongitude());
+//                    productsResponse.setTitle(product.getTitle());
+//                    productsResponse.setDescription(product.getDescription());
+//                    productsResponse.setCategory(product.getCategory());
+//                    productsResponse.setPrice(product.getPrice());
+//                    productsResponse.setTimeStamp(product.getTimestamp());
+//                    ProductLocation productLocation= productLocationRepository.findByProductProductId(product.getProductId());
+//                    productsResponse.setLatitude(productLocation.getLatitude());
+//                    productsResponse.setLongitude(productLocation.getLongitude());
 
-                    Set<ProductImage> productImages = product.getProductImages();
-                    List<String> imageIds = new ArrayList<>();
-                    for (ProductImage productImage : productImages) {
-                        imageIds.add(productImage.getImageId());
-                    }
-                    productsResponse.setImageids(imageIds);
+//                    Set<ProductImage> productImages = product.getProductImages();
+//                    List<String> imageIds = new ArrayList<>();
+//                    for (ProductImage productImage : productImages) {
+//                        imageIds.add(productImage.getImageId());
+//                    }
+//                    productsResponse.setImageids(imageIds);
                     productsResponses.add(productsResponse);
                     productStatus.setProductsResponse(productsResponses);
                     productStatus.setStatus(true);
                     productStatus.setMessage("Product Found");
 
                 }
-            }
-        }
-        catch (NoSuchElementException e) {
-
-            System.out.println("No product Found");
-            productStatus.setStatus(false);
-            productStatus.setMessage(e.getMessage());
-
-        }
+//            }
+//        }
+//        catch (NoSuchElementException e) {
+//
+//            System.out.println("No product Found");
+//            productStatus.setStatus(false);
+//            productStatus.setMessage(e.getMessage());
+//
+//        }
 
         return productStatus;
     }

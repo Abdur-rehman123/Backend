@@ -118,5 +118,11 @@ public class UserController {
         return ResponseEntity.ok(userService.editProfile(signupDto.getUserCredentialsDto(),signupDto.getUserDetailsDto()));
     }
 
+    @RequestMapping(value="/user/getuserdetails",method= RequestMethod.GET)
+    ResponseEntity<?> getUserDetails(@RequestParam("email") String email){
+        return ResponseEntity.ok(userService.getUserDetails(email));
+
+    }
+
 
 }

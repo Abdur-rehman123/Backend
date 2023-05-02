@@ -4,6 +4,7 @@ import KirayoApp.Kirayo.dto.UserCredentialsDto;
 import KirayoApp.Kirayo.dto.UserDetailsDto;
 import KirayoApp.Kirayo.returnStatus.ResponseStatus;
 import KirayoApp.Kirayo.returnStatus.LoginStatus;
+import KirayoApp.Kirayo.returnStatus.UserResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -18,4 +19,5 @@ public interface UserService {
     ResponseStatus forgetPassword(UserCredentialsDto userCredentialsDto);
 
     ResponseStatus editProfile(UserCredentialsDto userCredentialsDto,UserDetailsDto userDetailsDto);
+    UserResponse getUserDetails(String email);
 }

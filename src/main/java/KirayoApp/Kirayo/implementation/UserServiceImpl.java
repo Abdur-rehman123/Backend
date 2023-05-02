@@ -12,6 +12,7 @@ import KirayoApp.Kirayo.repository.UserDetailsRepository;
 import KirayoApp.Kirayo.repository.UserImageRepository;
 import KirayoApp.Kirayo.returnStatus.LoginStatus;
 import KirayoApp.Kirayo.returnStatus.ResponseStatus;
+import KirayoApp.Kirayo.returnStatus.UserResponse;
 import KirayoApp.Kirayo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -213,6 +214,21 @@ public class UserServiceImpl implements UserService
         responseStatus.setStatus(true);
         responseStatus.setMessage("Profile Updated Successfully");
         return responseStatus;
+    }
+
+    @Override
+    public UserResponse getUserDetails(String email) {
+        UserResponse userResponse= new UserResponse();
+        UserCredentials userCredentials;
+        userCredentials=userCredentialsRepository.findByEmail(email).orElseThrow();
+        UserDetails userDetails= new UserDetails();
+        userDetails=userDetailsRepository.findById(userCredentials.getUserId()).orElseThrow();
+        userResponse.setEmail(userCredentials.getEmail());
+        userResponse.setPhoneNumber(userCredentials.getPhoneNumber());
+        userResponse.setUserName(userDetails.getFullname());
+        userResponse.setCity(userDetails.getCity());
+        userResponse.setImageID(userDetails.getImage());
+        return userResponse;
     }
 
 }
