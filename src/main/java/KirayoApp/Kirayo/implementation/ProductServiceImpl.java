@@ -128,6 +128,7 @@ public class ProductServiceImpl implements ProductService {
                ProductsResponse productsResponse = new ProductsResponse();
                UserCredentials userCredentials= userCredentialsRepository.findById(product.getUser().getUserid()).orElseThrow();
                productsResponse.setEmail(userCredentials.getEmail());
+               productsResponse.setProductID(product.getProductId());
                productsResponse.setTitle(product.getTitle());
                productsResponse.setDescription(product.getDescription());
                productsResponse.setCategory(product.getCategory());
@@ -171,6 +172,7 @@ public class ProductServiceImpl implements ProductService {
             List<Product> products;
             products=productRepository.findAllProductsByUserName(email).orElseThrow(() -> new NoSuchElementException("No Product Found"));
             if(products.isEmpty()){
+
                 ProductsResponse productsResponse=new ProductsResponse();
                 System.out.println("No product Found");
                 productStatus.setStatus(false);
@@ -182,6 +184,7 @@ public class ProductServiceImpl implements ProductService {
                     ProductsResponse productsResponse = new ProductsResponse();
                     UserCredentials userCredentials= userCredentialsRepository.findById(product.getUser().getUserid()).orElseThrow();
                     productsResponse.setEmail(userCredentials.getEmail());
+                    productsResponse.setProductID(product.getProductId());
                     productsResponse.setTitle(product.getTitle());
                     productsResponse.setDescription(product.getDescription());
                     productsResponse.setCategory(product.getCategory());

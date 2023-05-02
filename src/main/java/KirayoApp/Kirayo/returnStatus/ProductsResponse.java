@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 public class ProductsResponse {
+    private Long productID;
     private String email;
     private String title;
     private String description;
@@ -14,7 +15,13 @@ public class ProductsResponse {
     private String longitude;
     private List<String> imageids;
 
+    public Long getProductID() {
+        return productID;
+    }
 
+    public void setProductID(Long productID) {
+        this.productID = productID;
+    }
 
     public String getEmail() {
         return email;
