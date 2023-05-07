@@ -44,11 +44,6 @@ public class ProductController {
 
         return ResponseEntity.ok(productService.savedProduct(savedProductDto));
     }
-    @RequestMapping(value="/product/getallproducts", method= RequestMethod.GET)
-    ResponseEntity<?> getAllProducts(){
-
-        return ResponseEntity.ok(productService.getAllProducts());
-    }
     @RequestMapping(value="/product/image",method= RequestMethod.GET)
     ResponseEntity<?> productimage(@RequestParam String id){
 
@@ -62,17 +57,51 @@ public class ProductController {
                 .body(resource);
 
     }
+    @RequestMapping(value="/product/getallproducts", method= RequestMethod.GET)
+    ResponseEntity<?> getAllProducts(){
+
+        return ResponseEntity.ok(productService.getAllProducts());
+    }
 
     @RequestMapping(value="/product/getuserproducts", method= RequestMethod.GET)
     ResponseEntity<?> getUserProducts(@RequestParam("email") String email){
 
         return ResponseEntity.ok(productService.getUserProducts(email));
     }
+    @RequestMapping(value="/product/edituserproducts", method= RequestMethod.PUT)
+    ResponseEntity<?> editUserProducts(@RequestParam("id") Long id,@RequestParam("productUploadDto") String productUploadDto,@RequestParam("images") MultipartFile[] images){
+        ObjectMapper objectMapper=new ObjectMapper();
+        ProductUploadDto productUploadDto1= null;
+        try {
+            productUploadDto1 = objectMapper.readValue(productUploadDto, ProductUploadDto.class);
+
+        } catch (IOException e) {
+            ResponseStatus responseStatus=new ResponseStatus();
+            responseStatus.setStatus(false);
+            responseStatus.setMessage(e.getMessage());
+        }
+        return ResponseEntity.ok(productService.editUserProducts(id,productUploadDto1,images));
+    }
+    @RequestMapping(value="/product/deleteuserproducts", method= RequestMethod.DELETE)
+    ResponseEntity<?> deleteUserProducts(@RequestParam("id") Long id){
+
+        return ResponseEntity.ok(productService.deleteUserProducts(id));
+    }
     @RequestMapping(value="/product/getusersavedproducts", method= RequestMethod.GET)
     ResponseEntity<?> getUserSavedProducts(@RequestParam("email") String email){
 
         return ResponseEntity.ok(productService.getUserSavedProducts(email));
     }
+
+
+    @RequestMapping(value="/product/deleteusersavedproducts", method= RequestMethod.DELETE)
+    ResponseEntity<?> deleteUserSavedProducts(@RequestParam("id") Long id){
+
+        return ResponseEntity.ok(productService.deleteUserSavedProducts(id));
+    }
+
+
+
 
 
 }

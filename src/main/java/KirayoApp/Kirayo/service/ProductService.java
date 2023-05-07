@@ -16,4 +16,13 @@ public interface ProductService {
     ProductStatus getUserProducts(String email);
 
     ProductStatus  getUserSavedProducts(String email);
+
+
+
+    ResponseStatus deleteUserSavedProducts(Long email);
+
+    ResponseStatus deleteUserProducts(Long email);
+
+    ResponseStatus editUserProducts(Long id,ProductUploadDto productUploadDto, MultipartFile[] images);
+    ResponseStatus deleteProductImage(String id);
 }

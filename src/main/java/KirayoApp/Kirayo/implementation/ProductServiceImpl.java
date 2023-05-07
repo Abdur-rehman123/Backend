@@ -264,4 +264,120 @@ public class ProductServiceImpl implements ProductService {
 
         return productStatus;
     }
+
+
+    @Override
+    public ResponseStatus deleteUserSavedProducts(Long id) {
+        ResponseStatus responseStatus=new ResponseStatus();
+        try{
+            SavedProduct savedProduct;
+            savedProduct=savedProductRepository.findById(id).orElseThrow(() -> new NoSuchElementException("No Product Found"));
+            savedProductRepository.delete(savedProduct);
+            responseStatus.setStatus(true);
+            responseStatus.setMessage("Product Deleted Successfully");
+
+        }
+        catch (NoSuchElementException e){
+            responseStatus.setStatus(false);
+            responseStatus.setMessage(e.getMessage());
+        }
+        return responseStatus;
+
+    }
+
+    @Override
+    public ResponseStatus deleteUserProducts(Long id) {
+        ResponseStatus responseStatus=new ResponseStatus();
+        try{
+            Product product;
+            product=productRepository.findById(id).orElseThrow(() -> new NoSuchElementException("No Product Found"));
+            productRepository.delete(product);
+            responseStatus.setStatus(true);
+            responseStatus.setMessage("Product Deleted Successfully");
+        }
+        catch(NoSuchElementException e){
+            responseStatus.setStatus(false);
+            responseStatus.setMessage(e.getMessage());
+        }
+        return responseStatus;
+    }
+
+    @Override
+    public ResponseStatus editUserProducts(Long id,ProductUploadDto productUploadDto, MultipartFile[] images) {
+        ResponseStatus responseStatus=new ResponseStatus();
+        try{
+            Product product;
+            ProductLocation productLocation;
+            product=productRepository.findById(id).orElseThrow(() -> new NoSuchElementException("No Product Found"));
+            productLocation=productLocationRepository.findByProductProductId(id);
+            if(productUploadDto.getCategory()!=null){
+                product.setCategory(productUploadDto.getCategory());
+            }
+            if(productUploadDto.getCategory()!=null){
+                product.setTitle(productUploadDto.getTitle());
+            }
+            if(productUploadDto.getCategory()!=null){
+                product.setDescription(productUploadDto.getDescription());
+            }
+            if(productUploadDto.getCategory()!=null){
+                product.setPrice(productUploadDto.getPrice());
+            }
+            if(productUploadDto.getCategory()!=null){
+                product.setTimestamp(productUploadDto.getTimeStamp());
+            }
+
+
+
+            if(images!=null)
+            {
+                Set<ProductImage> productImages = new HashSet<>();
+                for (MultipartFile image : images) {
+                    ProductImage productImage = new ProductImage();
+                    productImage.setImageId(imageIdGenerator.generateImageId());
+                    productImage.setImage(image.getBytes());
+                    productImage.setProduct(product);
+                    productImages.add(productImage);
+                }
+                //Save the ProductImages entity
+                productImagesRepository.saveAll(productImages);
+                product.setProductImages(productImages);
+            }
+            // Save the ProductImages
+
+
+
+            // Save the Product entity
+            productRepository.save(product);
+            if(productUploadDto.getLatitude()!=null){
+                productLocation.setLatitude(productUploadDto.getLatitude());
+            }
+            if(productUploadDto.getLongitude()!=null){
+                productLocation.setLongitude(productUploadDto.getLongitude());
+            }
+
+            productLocation.setProduct(product);
+
+
+            //Save the ProductLocation entity
+            productLocationRepository.save(productLocation);
+
+            responseStatus.setStatus(true);
+            responseStatus.setMessage("Product Uploaded Successfully");
+        }
+        catch (NoSuchElementException | IOException e ){
+            responseStatus.setStatus(false);
+            responseStatus.setMessage(e.getMessage());
+        }
+
+        return responseStatus;
+    }
+
+    @Override
+    public ResponseStatus deleteProductImage(String id) {
+        ResponseStatus responseStatus=new ResponseStatus();
+        productImagesRepository.delete(productImagesRepository.findByImageId(id));
+        responseStatus.setStatus(true);
+        responseStatus.setMessage("Product Deleted Successfully");
+        return responseStatus;
+    }
 }
