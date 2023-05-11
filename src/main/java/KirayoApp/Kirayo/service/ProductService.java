@@ -4,6 +4,7 @@ import KirayoApp.Kirayo.dto.ProductUploadDto;
 import KirayoApp.Kirayo.dto.SavedProductDto;
 import KirayoApp.Kirayo.returnStatus.ProductStatus;
 import KirayoApp.Kirayo.returnStatus.ResponseStatus;
+import KirayoApp.Kirayo.returnStatus.SavedProductStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -12,10 +13,10 @@ public interface ProductService {
 
     ResponseStatus productUpload(ProductUploadDto productUploadDto, MultipartFile[] images) throws IOException;
     ResponseStatus savedProduct(SavedProductDto savedProductDto);
-    ProductStatus getAllProducts();
+    ProductStatus getAllProducts(String email);
     ProductStatus getUserProducts(String email);
 
-    ProductStatus  getUserSavedProducts(String email);
+    SavedProductStatus getUserSavedProducts(String email);
 
 
 

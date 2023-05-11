@@ -5,9 +5,7 @@ import KirayoApp.Kirayo.dto.ProductUploadDto;
 import KirayoApp.Kirayo.dto.SavedProductDto;
 import KirayoApp.Kirayo.model.*;
 import KirayoApp.Kirayo.repository.*;
-import KirayoApp.Kirayo.returnStatus.ProductStatus;
-import KirayoApp.Kirayo.returnStatus.ProductsResponse;
-import KirayoApp.Kirayo.returnStatus.ResponseStatus;
+import KirayoApp.Kirayo.returnStatus.*;
 import KirayoApp.Kirayo.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -117,15 +116,27 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductStatus getAllProducts() {
+    public ProductStatus getAllProducts(String email) {
         ProductStatus productStatus=new ProductStatus();
 
        List<Product> products;
+        List<SavedProduct> savedProducts;
+        savedProducts=savedProductRepository.findAllSavedProductsByUserName(email).orElseThrow();
        products=productRepository.findAll();
        List<ProductsResponse> productsResponses=new ArrayList<>();
-       for(Product product : products){
+        Map<Long, SavedProduct> savedProductIDs = savedProducts.stream()
+                .collect(Collectors.toMap(sp -> sp.getProduct().getProductId(), sp -> sp));
+
+        for(Product product : products){
            if(product.getProductStatus()){
                ProductsResponse productsResponse = new ProductsResponse();
+               if (savedProductIDs.containsKey(product.getProductId())) {
+                   productsResponse.setIs_Saved(true);
+
+               }
+               else{
+                   productsResponse.setIs_Saved(false);
+               }
                UserCredentials userCredentials= userCredentialsRepository.findById(product.getUser().getUserid()).orElseThrow();
                productsResponse.setEmail(userCredentials.getEmail());
                productsResponse.setProductID(product.getProductId());
@@ -150,6 +161,7 @@ public class ProductServiceImpl implements ProductService {
                productStatus.setMessage("Product Found");
            }
        }
+
 //        ArrayList<Set<ProductImages>> productImages=new ArrayList<>;
 //       for(Product  product:products){
 //
@@ -220,38 +232,42 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ProductStatus  getUserSavedProducts(String email) {
-        ProductStatus productStatus=new ProductStatus();
+    public SavedProductStatus  getUserSavedProducts(String email) {
+        SavedProductStatus savedProductStatus =new SavedProductStatus();
 
        try{
-            List<ProductsResponse> productsResponses=new ArrayList<>();
+            List<SavedProductResponse> savedProductResponses=new ArrayList<>();
             List<SavedProduct> savedProducts;
-        savedProducts=savedProductRepository.findAllSavedProductsByUserName(email).orElseThrow(() -> new NoSuchElementException("No Product Found"));
+        savedProducts=savedProductRepository.findAllSavedProductsByUserName(email).orElseThrow();
+        if(savedProducts.isEmpty()){
+            throw new NoSuchElementException("You haven't added any products to your favorites yet.");
+        }
 
             for(SavedProduct savedProduct : savedProducts){
-                    ProductsResponse productsResponse = new ProductsResponse();
-                productsResponse.setProductID(savedProduct.getProduct().getProductId());
-                productsResponse.setEmail(email);
-                productsResponse.setTitle(savedProduct.getProduct().getTitle());
-                    productsResponse.setTitle(savedProduct.getProduct().getTitle());
-                    productsResponse.setDescription(savedProduct.getProduct().getDescription());
-                    productsResponse.setCategory(savedProduct.getProduct().getCategory());
-                    productsResponse.setPrice(savedProduct.getProduct().getPrice());
-                    productsResponse.setTimeStamp(savedProduct.getProduct().getTimestamp());
+                    SavedProductResponse savedProductResponse = new SavedProductResponse();
+                    savedProductResponse.setSavedProductId(savedProduct.getId());
+                    savedProductResponse.setProductID(savedProduct.getProduct().getProductId());
+                    savedProductResponse.setEmail(email);
+
+                    savedProductResponse.setTitle(savedProduct.getProduct().getTitle());
+                    savedProductResponse.setDescription(savedProduct.getProduct().getDescription());
+                    savedProductResponse.setCategory(savedProduct.getProduct().getCategory());
+                    savedProductResponse.setPrice(savedProduct.getProduct().getPrice());
+                    savedProductResponse.setTimeStamp(savedProduct.getProduct().getTimestamp());
                     ProductLocation productLocation= productLocationRepository.findByProductProductId(savedProduct.getProduct().getProductId());
-                    productsResponse.setLatitude(productLocation.getLatitude());
-                    productsResponse.setLongitude(productLocation.getLongitude());
+                    savedProductResponse.setLatitude(productLocation.getLatitude());
+                    savedProductResponse.setLongitude(productLocation.getLongitude());
 
                     Set<ProductImage> productImages = savedProduct.getProduct().getProductImages();
                     List<String> imageIds = new ArrayList<>();
                     for (ProductImage productImage : productImages) {
                         imageIds.add(productImage.getImageId());
                     }
-                    productsResponse.setImageids(imageIds);
-                    productsResponses.add(productsResponse);
-                    productStatus.setProductsResponse(productsResponses);
-                    productStatus.setStatus(true);
-                    productStatus.setMessage("Product Found");
+                    savedProductResponse.setImageids(imageIds);
+                    savedProductResponses.add(savedProductResponse);
+                    savedProductStatus.setSavedProductResponses(savedProductResponses);
+                    savedProductStatus.setStatus(true);
+                    savedProductStatus.setMessage("Product Found");
 
                 }
             }
@@ -259,12 +275,12 @@ public class ProductServiceImpl implements ProductService {
         catch (NoSuchElementException e) {
 
             System.out.println("No product Found");
-            productStatus.setStatus(false);
-            productStatus.setMessage(e.getMessage());
+            savedProductStatus.setStatus(false);
+            savedProductStatus.setMessage(e.getMessage());
 
         }
 
-        return productStatus;
+        return savedProductStatus;
     }
 
 

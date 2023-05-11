@@ -1,10 +1,13 @@
 package KirayoApp.Kirayo.returnStatus;
 
+
+
 import java.util.Date;
 import java.util.List;
 
-public class ProductsResponse {
-    private Long productID;
+public class SavedProductResponse {
+    private Long savedProductId;
+    private Long productId;
     private String email;
     private String title;
     private String description;
@@ -14,14 +17,22 @@ public class ProductsResponse {
     private String latitude;
     private String longitude;
     private List<String> imageids;
-    private Boolean is_Saved;
 
-    public Long getProductID() {
-        return productID;
+
+    public Long getSavedProductId() {
+        return savedProductId;
     }
 
-    public void setProductID(Long productID) {
-        this.productID = productID;
+    public void setSavedProductId(Long savedProductId) {
+        this.savedProductId = savedProductId;
+    }
+
+    public Long getProductID() {
+        return productId;
+    }
+
+    public void setProductID(Long productId) {
+        this.productId = productId;
     }
 
     public String getEmail() {
@@ -94,11 +105,6 @@ public class ProductsResponse {
         this.imageids = imageids;
     }
 
-    public Boolean getIs_Saved() {
-        return is_Saved;
-    }
 
-    public void setIs_Saved(Boolean is_Saved) {
-        this.is_Saved = is_Saved;
-    }
 }
+

@@ -58,9 +58,9 @@ public class ProductController {
 
     }
     @RequestMapping(value="/product/getallproducts", method= RequestMethod.GET)
-    ResponseEntity<?> getAllProducts(){
+    ResponseEntity<?> getAllProducts(@RequestParam("email")String email){
 
-        return ResponseEntity.ok(productService.getAllProducts());
+        return ResponseEntity.ok(productService.getAllProducts(email));
     }
 
     @RequestMapping(value="/product/getuserproducts", method= RequestMethod.GET)
