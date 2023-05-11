@@ -1,4 +1,4 @@
-package KirayoApp.Kirayo.Service;
+package KirayoApp.Kirayo.service;
 
 public interface Fileservice {
 }
