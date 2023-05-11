@@ -1,12 +1,13 @@
 package KirayoApp.Kirayo.returnStatus;
 
-public class ResponseStatus {
+import java.util.List;
 
+public class ResponseStatus {
 
     private Boolean status;
     private String message;
-    public ResponseStatus(){
 
+    public ResponseStatus() {
 
     }
 
@@ -14,13 +15,16 @@ public class ResponseStatus {
         return status;
     }
 
-    /*public void setStatus(String status) {
-        this.status = status;
-    }*/
+    /*
+     * public void setStatus(String status) {
+     * this.status = status;
+     * }
+     */
 
     public String getMessage() {
         return message;
     }
+
     public void setStatus(Boolean status) {
         this.status = status;
     }
@@ -29,7 +33,4 @@ public class ResponseStatus {
         this.message = message;
     }
 
-    /*public void setMessage(String message) {
-        this.message = message;
-    }*/
 }

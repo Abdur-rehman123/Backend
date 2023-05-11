@@ -11,18 +11,26 @@ import java.io.IOException;
 public interface ProductService {
 
     ResponseStatus productUpload(ProductUploadDto productUploadDto, MultipartFile[] images) throws IOException;
+
     ResponseStatus savedProduct(SavedProductDto savedProductDto);
+
     ProductStatus getAllProducts();
+
     ProductStatus getUserProducts(String email);
 
-    ProductStatus  getUserSavedProducts(String email);
-
-
+    ProductStatus getUserSavedProducts(String email);
 
     ResponseStatus deleteUserSavedProducts(Long email);
 
     ResponseStatus deleteUserProducts(Long email);
 
-    ResponseStatus editUserProducts(Long id,ProductUploadDto productUploadDto, MultipartFile[] images);
+    ResponseStatus editUserProducts(Long id, ProductUploadDto productUploadDto, MultipartFile[] images);
+
     ResponseStatus deleteProductImage(String id);
+
+    // PAYMENT
+
+    ResponseStatus getCustomerBalance(String email);
+
+    ResponseStatus reserveProductPaymentIntent(String paymentData) throws IOException;
 }
