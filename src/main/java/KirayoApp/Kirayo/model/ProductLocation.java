@@ -2,6 +2,8 @@ package KirayoApp.Kirayo.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 
@@ -17,8 +19,10 @@ public class ProductLocation {
     @Column(name = "location_id")
     private Long locationId;
 
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Product product;
 
     @Column(name = "longitude", nullable = false)

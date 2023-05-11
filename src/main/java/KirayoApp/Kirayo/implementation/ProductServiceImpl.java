@@ -145,7 +145,7 @@ public class ProductServiceImpl implements ProductService {
                productsResponse.setCategory(product.getCategory());
                productsResponse.setPrice(product.getPrice());
                productsResponse.setTimeStamp(product.getTimestamp());
-               ProductLocation productLocation= productLocationRepository.findByProductProductId(product.getProductId());
+               ProductLocation productLocation= productLocationRepository.findProductLocationByProductId(product.getProductId());
                productsResponse.setLatitude(productLocation.getLatitude());
                productsResponse.setLongitude(productLocation.getLongitude());
 
@@ -202,7 +202,7 @@ public class ProductServiceImpl implements ProductService {
                     productsResponse.setCategory(product.getCategory());
                     productsResponse.setPrice(product.getPrice());
                     productsResponse.setTimeStamp(product.getTimestamp());
-                    ProductLocation productLocation= productLocationRepository.findByProductProductId(product.getProductId());
+                    ProductLocation productLocation= productLocationRepository.findProductLocationByProductId(product.getProductId());
                     productsResponse.setLatitude(productLocation.getLatitude());
                     productsResponse.setLongitude(productLocation.getLongitude());
 
@@ -254,7 +254,7 @@ public class ProductServiceImpl implements ProductService {
                     savedProductResponse.setCategory(savedProduct.getProduct().getCategory());
                     savedProductResponse.setPrice(savedProduct.getProduct().getPrice());
                     savedProductResponse.setTimeStamp(savedProduct.getProduct().getTimestamp());
-                    ProductLocation productLocation= productLocationRepository.findByProductProductId(savedProduct.getProduct().getProductId());
+                    ProductLocation productLocation= productLocationRepository.findProductLocationByProductId(savedProduct.getProduct().getProductId());
                     savedProductResponse.setLatitude(productLocation.getLatitude());
                     savedProductResponse.setLongitude(productLocation.getLongitude());
 
@@ -303,11 +303,27 @@ public class ProductServiceImpl implements ProductService {
 
     }
 
-    @Override
     public ResponseStatus deleteUserProducts(Long id) {
         ResponseStatus responseStatus=new ResponseStatus();
         try{
+
             Product product;
+            ProductLocation productLocation;
+            List<SavedProduct> savedProducts=savedProductRepository.findAllSavedProductsByProductId(id).orElseThrow();
+            for(SavedProduct savedProduct:savedProducts){
+                savedProductRepository.delete(savedProduct);
+            }
+//            List<ProductImage> productImages=productImagesRepository.findProductByProductId(id);
+//            for(ProductImage productImage:productImages){
+//                System.out.println(productImage.getProduct().getProductId());
+//                productImagesRepository.delete(productImage);
+//
+//            }
+
+            productLocation=productLocationRepository.findProductLocationByProductId(id);
+
+            productLocationRepository.delete(productLocation);
+
             product=productRepository.findById(id).orElseThrow(() -> new NoSuchElementException("No Product Found"));
             productRepository.delete(product);
             responseStatus.setStatus(true);
@@ -320,6 +336,7 @@ public class ProductServiceImpl implements ProductService {
         return responseStatus;
     }
 
+
     @Override
     public ResponseStatus editUserProducts(Long id,ProductUploadDto productUploadDto, MultipartFile[] images) {
         ResponseStatus responseStatus=new ResponseStatus();
@@ -327,7 +344,7 @@ public class ProductServiceImpl implements ProductService {
             Product product;
             ProductLocation productLocation;
             product=productRepository.findById(id).orElseThrow(() -> new NoSuchElementException("No Product Found"));
-            productLocation=productLocationRepository.findByProductProductId(id);
+            productLocation=productLocationRepository.findProductLocationByProductId(id);
             if(productUploadDto.getCategory()!=null){
                 product.setCategory(productUploadDto.getCategory());
             }
