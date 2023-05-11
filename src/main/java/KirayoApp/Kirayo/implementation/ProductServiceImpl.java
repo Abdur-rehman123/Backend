@@ -223,44 +223,46 @@ public class ProductServiceImpl implements ProductService {
     public ProductStatus  getUserSavedProducts(String email) {
         ProductStatus productStatus=new ProductStatus();
 
-//        try{
+       try{
             List<ProductsResponse> productsResponses=new ArrayList<>();
-            List<SavedProduct> products;
-            products=savedProductRepository.findAllSavedProductsByUserName(email).orElseThrow(() -> new NoSuchElementException("No Product Found"));
+            List<SavedProduct> savedProducts;
+        savedProducts=savedProductRepository.findAllSavedProductsByUserName(email).orElseThrow(() -> new NoSuchElementException("No Product Found"));
 
-            for(SavedProduct product : products){
-//                if(product.getProductStatus()){
+            for(SavedProduct savedProduct : savedProducts){
                     ProductsResponse productsResponse = new ProductsResponse();
-//                    productsResponse.setTitle(product.getTitle());
-//                    productsResponse.setDescription(product.getDescription());
-//                    productsResponse.setCategory(product.getCategory());
-//                    productsResponse.setPrice(product.getPrice());
-//                    productsResponse.setTimeStamp(product.getTimestamp());
-//                    ProductLocation productLocation= productLocationRepository.findByProductProductId(product.getProductId());
-//                    productsResponse.setLatitude(productLocation.getLatitude());
-//                    productsResponse.setLongitude(productLocation.getLongitude());
+                productsResponse.setProductID(savedProduct.getProduct().getProductId());
+                productsResponse.setEmail(email);
+                productsResponse.setTitle(savedProduct.getProduct().getTitle());
+                    productsResponse.setTitle(savedProduct.getProduct().getTitle());
+                    productsResponse.setDescription(savedProduct.getProduct().getDescription());
+                    productsResponse.setCategory(savedProduct.getProduct().getCategory());
+                    productsResponse.setPrice(savedProduct.getProduct().getPrice());
+                    productsResponse.setTimeStamp(savedProduct.getProduct().getTimestamp());
+                    ProductLocation productLocation= productLocationRepository.findByProductProductId(savedProduct.getProduct().getProductId());
+                    productsResponse.setLatitude(productLocation.getLatitude());
+                    productsResponse.setLongitude(productLocation.getLongitude());
 
-//                    Set<ProductImage> productImages = product.getProductImages();
-//                    List<String> imageIds = new ArrayList<>();
-//                    for (ProductImage productImage : productImages) {
-//                        imageIds.add(productImage.getImageId());
-//                    }
-//                    productsResponse.setImageids(imageIds);
+                    Set<ProductImage> productImages = savedProduct.getProduct().getProductImages();
+                    List<String> imageIds = new ArrayList<>();
+                    for (ProductImage productImage : productImages) {
+                        imageIds.add(productImage.getImageId());
+                    }
+                    productsResponse.setImageids(imageIds);
                     productsResponses.add(productsResponse);
                     productStatus.setProductsResponse(productsResponses);
                     productStatus.setStatus(true);
                     productStatus.setMessage("Product Found");
 
                 }
-//            }
-//        }
-//        catch (NoSuchElementException e) {
-//
-//            System.out.println("No product Found");
-//            productStatus.setStatus(false);
-//            productStatus.setMessage(e.getMessage());
-//
-//        }
+            }
+
+        catch (NoSuchElementException e) {
+
+            System.out.println("No product Found");
+            productStatus.setStatus(false);
+            productStatus.setMessage(e.getMessage());
+
+        }
 
         return productStatus;
     }
