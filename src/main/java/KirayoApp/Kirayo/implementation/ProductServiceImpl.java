@@ -345,19 +345,20 @@ public class ProductServiceImpl implements ProductService {
             ProductLocation productLocation;
             product=productRepository.findById(id).orElseThrow(() -> new NoSuchElementException("No Product Found"));
             productLocation=productLocationRepository.findProductLocationByProductId(id);
+            System.out.println(productUploadDto.getTitle());
             if(productUploadDto.getCategory()!=null){
                 product.setCategory(productUploadDto.getCategory());
             }
-            if(productUploadDto.getCategory()!=null){
+            if(productUploadDto.getTitle()!=null){
                 product.setTitle(productUploadDto.getTitle());
             }
-            if(productUploadDto.getCategory()!=null){
+            if(productUploadDto.getDescription()!=null){
                 product.setDescription(productUploadDto.getDescription());
             }
-            if(productUploadDto.getCategory()!=null){
+            if(productUploadDto.getPrice()!=0){
                 product.setPrice(productUploadDto.getPrice());
             }
-            if(productUploadDto.getCategory()!=null){
+            if(productUploadDto.getTimeStamp()!=null){
                 product.setTimestamp(productUploadDto.getTimeStamp());
             }
 

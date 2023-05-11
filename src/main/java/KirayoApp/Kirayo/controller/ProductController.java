@@ -71,7 +71,7 @@ public class ProductController {
     @RequestMapping(value="/product/edituserproducts", method= RequestMethod.PUT)
     ResponseEntity<?> editUserProducts(@RequestParam("id") Long id,@RequestParam("productUploadDto") String productUploadDto,@RequestParam("images") MultipartFile[] images){
         ObjectMapper objectMapper=new ObjectMapper();
-        ProductUploadDto productUploadDto1= null;
+        ProductUploadDto productUploadDto1=new ProductUploadDto();
         try {
             productUploadDto1 = objectMapper.readValue(productUploadDto, ProductUploadDto.class);
 
