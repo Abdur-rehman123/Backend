@@ -1,5 +1,6 @@
 package KirayoApp.Kirayo.service;
 
+import KirayoApp.Kirayo.dto.ImageIdsDao;
 import KirayoApp.Kirayo.dto.ProductUploadDto;
 import KirayoApp.Kirayo.dto.SavedProductDto;
 import KirayoApp.Kirayo.returnStatus.ProductStatus;
@@ -12,18 +13,27 @@ import java.io.IOException;
 public interface ProductService {
 
     ResponseStatus productUpload(ProductUploadDto productUploadDto, MultipartFile[] images) throws IOException;
+
     ResponseStatus savedProduct(SavedProductDto savedProductDto);
+
     ProductStatus getAllProducts(String email);
+
     ProductStatus getUserProducts(String email);
 
     SavedProductStatus getUserSavedProducts(String email);
-
-
 
     ResponseStatus deleteUserSavedProducts(Long email);
 
     ResponseStatus deleteUserProducts(Long email);
 
-    ResponseStatus editUserProducts(Long id,ProductUploadDto productUploadDto, MultipartFile[] images);
+    ResponseStatus editUserProducts(Long id, ProductUploadDto productUploadDto);
+
     ResponseStatus deleteProductImage(String id);
+     ResponseStatus editProductImage(Long productId, ImageIdsDao imageIds, MultipartFile[] images) throws IOException;
+
+    // PAYMENT
+
+//    ResponseStatus getCustomerBalance(String email);
+
+//    ResponseStatus reserveProductPaymentIntent(String paymentData) throws IOException;
 }
