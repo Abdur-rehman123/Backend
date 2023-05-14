@@ -1,9 +1,6 @@
 package KirayoApp.Kirayo.controller;
 
-import KirayoApp.Kirayo.dto.ImageIdsDao;
-import KirayoApp.Kirayo.dto.ProductReviewDao;
-import KirayoApp.Kirayo.dto.ProductUploadDto;
-import KirayoApp.Kirayo.dto.SavedProductDto;
+import KirayoApp.Kirayo.dto.*;
 import KirayoApp.Kirayo.model.ProductImage;
 import KirayoApp.Kirayo.repository.ProductImagesRepository;
 import KirayoApp.Kirayo.returnStatus.ResponseStatus;
@@ -139,6 +136,12 @@ public class ProductController {
 
         return ResponseEntity.ok(productService.editProductReview(reviewId,productReviewDao));
     }
+    @RequestMapping(value = "/product/reservation/productrequest", method = RequestMethod.POST)
+    ResponseEntity<?> editProductReviews(@RequestParam("email") String email, @RequestBody ProductRequestDao productRequestDao) {
+
+        return ResponseEntity.ok(productService.productRequest(email,productRequestDao));
+    }
+
 
     // Create a REST endpoint to handle payment intent creation
 //    @RequestMapping(value = "/payment/create-payment-intent", method = RequestMethod.POST)

@@ -1,9 +1,6 @@
 package KirayoApp.Kirayo.service;
 
-import KirayoApp.Kirayo.dto.ImageIdsDao;
-import KirayoApp.Kirayo.dto.ProductReviewDao;
-import KirayoApp.Kirayo.dto.ProductUploadDto;
-import KirayoApp.Kirayo.dto.SavedProductDto;
+import KirayoApp.Kirayo.dto.*;
 import KirayoApp.Kirayo.returnStatus.ProductStatus;
 import KirayoApp.Kirayo.returnStatus.ResponseStatus;
 import KirayoApp.Kirayo.returnStatus.ReviewStatus;
@@ -40,6 +37,8 @@ public interface ProductService {
     ReviewStatus getProductReviewByUser(String email);
 
     ResponseStatus editProductReview(Long productReviewId, ProductReviewDao productReviewDao);
+
+    ResponseStatus productRequest(String email, ProductRequestDao productRequestDao);
     // PAYMENT
 
 //    ResponseStatus getCustomerBalance(String email);

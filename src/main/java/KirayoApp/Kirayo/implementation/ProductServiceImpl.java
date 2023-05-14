@@ -1,10 +1,7 @@
 package KirayoApp.Kirayo.implementation;
 
 import KirayoApp.Kirayo.beans.ImageIdGenerator;
-import KirayoApp.Kirayo.dto.ImageIdsDao;
-import KirayoApp.Kirayo.dto.ProductReviewDao;
-import KirayoApp.Kirayo.dto.ProductUploadDto;
-import KirayoApp.Kirayo.dto.SavedProductDto;
+import KirayoApp.Kirayo.dto.*;
 import KirayoApp.Kirayo.filter.ProductSorter;
 import KirayoApp.Kirayo.model.*;
 import KirayoApp.Kirayo.repository.*;
@@ -39,6 +36,8 @@ public class ProductServiceImpl implements ProductService {
     private ProductReviewRepository productReviewRepository;
     @Autowired
     private ProductSorter productSorter;
+    @Autowired
+    private ProductRequestRepository productRequestRepository;
 
 //    @Value("${stripe.api.secretKey}")
 //    String stripeKey;
@@ -626,6 +625,24 @@ public class ProductServiceImpl implements ProductService {
 
         }
 
+
+        return responseStatus;
+    }
+
+    @Override
+    public ResponseStatus productRequest(String email, ProductRequestDao productRequestDao) {
+        ProductRequest productRequest=new ProductRequest();
+        UserCredentials userCredentials=userCredentialsRepository.findByEmail(email).orElseThrow();
+        UserDetails userDetails=userDetailsRepository.findById(userCredentials.getUserId()).orElseThrow();
+        Product product=productRepository.findById(productRequestDao.getProductId()).orElseThrow();
+        productRequest.setProduct(product);
+        productRequest.setRequestStatus("pending");
+        productRequest.setTimestamp(productRequestDao.getTimeStamp());
+        productRequest.setRenter(userDetails);
+        productRequestRepository.save(productRequest);
+        ResponseStatus responseStatus=new ResponseStatus();
+        responseStatus.setMessage("Request Submitted Succssfully");
+        responseStatus.setStatus(true);
 
         return responseStatus;
     }
