@@ -17,6 +17,7 @@ public class SavedProductResponse {
     private String latitude;
     private String longitude;
     private List<String> imageids;
+    private Double rating;
 
 
     public Long getSavedProductId() {
@@ -105,6 +106,20 @@ public class SavedProductResponse {
         this.imageids = imageids;
     }
 
+    public Long getProductId() {
+        return productId;
+    }
 
+    public void setProductId(Long productId) {
+        this.productId = productId;
+    }
+
+    public Double getRating() {
+        return rating;
+    }
+
+    public void setRating(Double rating) {
+        this.rating = rating;
+    }
 }
 

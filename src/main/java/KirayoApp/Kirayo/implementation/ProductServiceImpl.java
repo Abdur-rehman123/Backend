@@ -2,14 +2,14 @@ package KirayoApp.Kirayo.implementation;
 
 import KirayoApp.Kirayo.beans.ImageIdGenerator;
 import KirayoApp.Kirayo.dto.ImageIdsDao;
+import KirayoApp.Kirayo.dto.ProductReviewDao;
 import KirayoApp.Kirayo.dto.ProductUploadDto;
 import KirayoApp.Kirayo.dto.SavedProductDto;
+import KirayoApp.Kirayo.filter.ProductSorter;
 import KirayoApp.Kirayo.model.*;
 import KirayoApp.Kirayo.repository.*;
 import KirayoApp.Kirayo.returnStatus.*;
 import KirayoApp.Kirayo.service.ProductService;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,6 +35,10 @@ public class ProductServiceImpl implements ProductService {
     private SavedProductRepository savedProductRepository;
     @Autowired
     private ProductLocationRepository productLocationRepository;
+    @Autowired
+    private ProductReviewRepository productReviewRepository;
+    @Autowired
+    private ProductSorter productSorter;
 
 //    @Value("${stripe.api.secretKey}")
 //    String stripeKey;
@@ -135,6 +139,12 @@ public class ProductServiceImpl implements ProductService {
         for (Product product : products) {
             if (product.getProductStatus()) {
                 ProductsResponse productsResponse = new ProductsResponse();
+                List<ProductReview> productReviews=productReviewRepository.findAllByProductProductId(product.getProductId());
+                double averageRating = productReviews.stream()
+                        .mapToDouble(ProductReview::getRating)
+                        .average()
+                        .orElse(0.0);
+
                 if (savedProductIDs.containsKey(product.getProductId())) {
                     productsResponse.setIs_Saved(true);
 
@@ -150,6 +160,7 @@ public class ProductServiceImpl implements ProductService {
                 productsResponse.setCategory(product.getCategory());
                 productsResponse.setPrice(product.getPrice());
                 productsResponse.setTimeStamp(product.getTimestamp());
+                productsResponse.setRating(averageRating);
                 ProductLocation productLocation = productLocationRepository
                         .findProductLocationByProductId(product.getProductId());
                 productsResponse.setLatitude(productLocation.getLatitude());
@@ -201,6 +212,12 @@ public class ProductServiceImpl implements ProductService {
                     ProductsResponse productsResponse = new ProductsResponse();
                     UserCredentials userCredentials = userCredentialsRepository.findById(product.getUser().getUserid())
                             .orElseThrow();
+                    List<ProductReview> productReviews=productReviewRepository.findAllByProductProductId(product.getProductId());
+
+                    double averageRating = productReviews.stream()
+                            .mapToDouble(ProductReview::getRating)
+                            .average()
+                            .orElse(0.0);
                     productsResponse.setEmail(userCredentials.getEmail());
                     productsResponse.setProductID(product.getProductId());
                     productsResponse.setTitle(product.getTitle());
@@ -208,6 +225,7 @@ public class ProductServiceImpl implements ProductService {
                     productsResponse.setCategory(product.getCategory());
                     productsResponse.setPrice(product.getPrice());
                     productsResponse.setTimeStamp(product.getTimestamp());
+                    productsResponse.setRating(averageRating);
                     ProductLocation productLocation = productLocationRepository
                             .findProductLocationByProductId(product.getProductId());
                     productsResponse.setLatitude(productLocation.getLatitude());
@@ -223,6 +241,10 @@ public class ProductServiceImpl implements ProductService {
                     productStatus.setProductsResponse(productsResponses);
                     productStatus.setStatus(true);
                     productStatus.setMessage("Product Found");
+                    List<ProductsResponse> productssort = productStatus.getProductsResponse();
+
+
+                    new ProductSorter().sortProductsByTimeStampDescending(productssort);
 
                 }
             }
@@ -233,7 +255,7 @@ public class ProductServiceImpl implements ProductService {
             productStatus.setMessage(e.getMessage());
 
         }
-
+//        productStatus.getProductsResponse().sort();
         return productStatus;
     }
 
@@ -251,6 +273,12 @@ public class ProductServiceImpl implements ProductService {
 
             for (SavedProduct savedProduct : savedProducts) {
                 SavedProductResponse savedProductResponse = new SavedProductResponse();
+                List<ProductReview> productReviews=productReviewRepository.findAllByRenteeUserid(savedProduct.getProduct().getProductId());
+
+                double averageRating = productReviews.stream()
+                        .mapToDouble(ProductReview::getRating)
+                        .average()
+                        .orElse(0.0);
                 savedProductResponse.setSavedProductId(savedProduct.getId());
                 savedProductResponse.setProductID(savedProduct.getProduct().getProductId());
                 savedProductResponse.setEmail(email);
@@ -264,6 +292,7 @@ public class ProductServiceImpl implements ProductService {
                         .findProductLocationByProductId(savedProduct.getProduct().getProductId());
                 savedProductResponse.setLatitude(productLocation.getLatitude());
                 savedProductResponse.setLongitude(productLocation.getLongitude());
+                savedProductResponse.setRating(averageRating);
 
                 Set<ProductImage> productImages = savedProduct.getProduct().getProductImages();
                 List<String> imageIds = new ArrayList<>();
@@ -468,6 +497,134 @@ public class ProductServiceImpl implements ProductService {
             responseStatus.setMessage(e.getMessage());
         }
 
+
+
+        return responseStatus;
+    }
+
+    @Override
+    public ResponseStatus productReview(ProductReviewDao productReviewDao) {
+        ResponseStatus responseStatus=new ResponseStatus();
+        try{
+            UserCredentials userCredentials=userCredentialsRepository.findByEmail(productReviewDao.getEmail()).orElseThrow(() -> new NoSuchElementException("No User Found"));
+            UserDetails userDetails=userDetailsRepository.findById(userCredentials.getUserId()).orElseThrow(() -> new NoSuchElementException("No User Found"));
+            Product product=productRepository.findById(productReviewDao.getProductId()).orElseThrow(() -> new NoSuchElementException("No Product Found"));
+            ProductReview productReview=new ProductReview();
+            productReview.setComment(productReviewDao.getComment());
+            productReview.setRating(productReviewDao.getRating());
+            productReview.setRentee(userDetails);
+            productReview.setProduct(product);
+            productReviewRepository.save(productReview);
+            responseStatus.setStatus(true);
+            responseStatus.setMessage("Product Review Added Successfully");
+
+        }
+        catch(NoSuchElementException e){
+            responseStatus.setStatus(false);
+            responseStatus.setMessage(e.getMessage());
+
+        }
+
+
+        return responseStatus;
+    }
+    @Override
+    public ReviewStatus getProductReviews(Long productId) {
+
+        List<ProductReview>productReviews=productReviewRepository.findAllByProductProductId(productId);
+        ReviewStatus reviewStatus=new ReviewStatus();
+        if(productReviews.isEmpty())
+        {
+            reviewStatus.setStatus(false);
+            reviewStatus.setMessage("Reviews Not found");
+            reviewStatus.setProductsResponse(null);
+        }
+        else{
+            List<ReviewResponse>reviewResponses=new ArrayList<>();
+            for (ProductReview productReview:productReviews){
+                ReviewResponse reviewResponse=new ReviewResponse();
+                reviewResponse.setRenterName(productReview.getRentee().getFullname());
+                reviewResponse.setRenterCity(productReview.getRentee().getCity());
+                reviewResponse.setReviewId(productReview.getId());
+                reviewResponse.setComment(productReview.getComment());
+                reviewResponse.setRating(productReview.getRating());
+                reviewResponse.setTimeStamp(productReview.getTimestamp());
+                reviewResponses.add(reviewResponse);
+
+            }
+            reviewStatus.setStatus(true);
+            reviewStatus.setMessage("Reviews FOUND");
+            reviewStatus.setProductsResponse(reviewResponses);
+
+
+        }
+
+        return reviewStatus;
+    }
+    @Override
+    public ReviewStatus getProductReviewByUser(String email) {
+        ReviewStatus reviewStatus=new ReviewStatus();
+        try{
+            UserCredentials userCredentials=userCredentialsRepository.findByEmail(email).orElseThrow(() -> new NoSuchElementException("No User Found"));
+            List<ProductReview>productReviews=productReviewRepository.findAllByRenteeUserid(userCredentials.getUserId());
+            if(productReviews.isEmpty())
+            {
+                reviewStatus.setStatus(false);
+                reviewStatus.setMessage("Reviews Not found");
+                reviewStatus.setProductsResponse(null);
+            }
+            else {
+                List<ReviewResponse> reviewResponses = new ArrayList<>();
+                for (ProductReview productReview : productReviews) {
+                    ReviewResponse reviewResponse = new ReviewResponse();
+                    reviewResponse.setRenterName(productReview.getRentee().getFullname());
+                    reviewResponse.setRenterCity(productReview.getRentee().getCity());
+                    reviewResponse.setReviewId(productReview.getId());
+                    reviewResponse.setComment(productReview.getComment());
+                    reviewResponse.setRating(productReview.getRating());
+                    reviewResponse.setTimeStamp(productReview.getTimestamp());
+                    reviewResponses.add(reviewResponse);
+
+                }
+                reviewStatus.setStatus(true);
+                reviewStatus.setMessage("Reviews FOUND");
+                reviewStatus.setProductsResponse(reviewResponses);
+            }
+
+        }
+        catch(NoSuchElementException e){
+            reviewStatus.setStatus(false);
+            reviewStatus.setMessage("Reviews Not found");
+            reviewStatus.setProductsResponse(null);
+        }
+        return reviewStatus;
+    }
+    @Override
+    public ResponseStatus editProductReview(Long productReviewId,ProductReviewDao productReviewDao) {
+        ResponseStatus responseStatus=new ResponseStatus();
+        try{
+
+            ProductReview productReview=new ProductReview();
+            productReview=productReviewRepository.findById(productReviewId).orElseThrow(()-> new NoSuchElementException("No Review Found"));
+            if(productReviewDao.getComment()!=null){
+                productReview.setComment(productReviewDao.getComment());
+            }
+            else{
+                productReview.setRating(productReviewDao.getRating());
+            }
+
+
+
+            productReviewRepository.save(productReview);
+            responseStatus.setStatus(true);
+            responseStatus.setMessage("Product Review Updated Successfully");
+
+        }
+        catch(NoSuchElementException e){
+            responseStatus.setStatus(false);
+            responseStatus.setMessage(e.getMessage());
+
+        }
 
 
         return responseStatus;

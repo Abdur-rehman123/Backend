@@ -1,5 +1,6 @@
 package KirayoApp.Kirayo.controller;
 
+import KirayoApp.Kirayo.dto.EditProfileDao;
 import KirayoApp.Kirayo.dto.SignupDto;
 import KirayoApp.Kirayo.dto.UserCredentialsDto;
 import KirayoApp.Kirayo.model.UserImage;
@@ -113,9 +114,9 @@ public class UserController {
         return ResponseEntity.ok(userService.forgetPassword(userCredentialsDto));
     }
 
-    @RequestMapping(value="/user/editprofile",method= RequestMethod.POST)
-    ResponseEntity<?> editProfile(@RequestBody SignupDto signupDto){
-        return ResponseEntity.ok(userService.editProfile(signupDto.getUserCredentialsDto(),signupDto.getUserDetailsDto()));
+    @RequestMapping(value="/user/editprofile",method= RequestMethod.PATCH)
+    ResponseEntity<?> editProfile(@RequestParam("email") String email,@RequestBody EditProfileDao editProfileDao){
+        return ResponseEntity.ok(userService.editProfile(email,editProfileDao));
     }
 
     @RequestMapping(value="/user/getuserdetails",method= RequestMethod.GET)

@@ -1,7 +1,14 @@
 package KirayoApp.Kirayo.model;
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
+import java.util.Date;
+
 @Entity
 @Table(name = "product_review")
+@Getter
+@Setter
 public class ProductReview {
 
     @Id
@@ -22,6 +29,8 @@ public class ProductReview {
 
     @Column(name = "rating", nullable = false)
     private Float rating;
+    @Column(name = "timestamp")
+    private Date timestamp;
 
     // Constructors, getters and setters
     // ...

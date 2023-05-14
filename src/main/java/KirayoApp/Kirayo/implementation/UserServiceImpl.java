@@ -1,6 +1,7 @@
 package KirayoApp.Kirayo.implementation;
 
 import KirayoApp.Kirayo.beans.ImageIdGenerator;
+import KirayoApp.Kirayo.dto.EditProfileDao;
 import KirayoApp.Kirayo.dto.UserCredentialsDto;
 import KirayoApp.Kirayo.dto.UserDetailsDto;
 import KirayoApp.Kirayo.filter.JwtUtill;
@@ -186,27 +187,23 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
-    public ResponseStatus editProfile(UserCredentialsDto userCredentialsDto,
-                                      UserDetailsDto userDetailsDto) {
-        UserCredentials userCredentials=userCredentialsRepository.findByEmail(userCredentialsDto.getEmail()).orElseThrow();
+    public ResponseStatus editProfile(String email,EditProfileDao editProfileDao) {
+        UserCredentials userCredentials=userCredentialsRepository.findByEmail(email).orElseThrow();
         UserDetails userDetails=userDetailsRepository.findById(userCredentials.getUserId()).orElseThrow();
-        if(userCredentialsDto.getPhoneNumber()!=null){
-            userCredentials.setPhoneNumber(userCredentialsDto.getPhoneNumber());
+        if(editProfileDao.getPassword()!=null){
+            userCredentials.setPassword(new BCryptPasswordEncoder().encode(editProfileDao.getPassword()));
         }
-        if(userCredentialsDto.getPassword()!=null){
-            userCredentials.setPassword(new BCryptPasswordEncoder().encode(userCredentialsDto.getPassword()));
+        if(editProfileDao.getCity()!=null){
+            userDetails.setCity(editProfileDao.getCity());
         }
-        if(userDetailsDto.getCity()!=null){
-            userDetails.setCity(userDetailsDto.getCity());
+        if(editProfileDao.getImage()!=null){
+            userDetails.setImage(editProfileDao.getImage());
         }
-        if(userDetailsDto.getImage()!=null){
-            userDetails.setImage(userDetailsDto.getImage());
+        if(editProfileDao.getDob()!=null){
+            userDetails.setDob(editProfileDao.getDob());
         }
-        if(userDetailsDto.getDob()!=null){
-            userDetails.setDob(userDetailsDto.getDob());
-        }
-        if(userDetailsDto.getFullName()!=null){
-            userDetails.setFullname(userDetailsDto.getFullName());
+        if(editProfileDao.getFullName()!=null){
+            userDetails.setFullname(editProfileDao.getFullName());
         }
         userCredentialsRepository.save(userCredentials);
         userDetailsRepository.save(userDetails);

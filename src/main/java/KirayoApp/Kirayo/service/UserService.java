@@ -1,5 +1,6 @@
 package KirayoApp.Kirayo.service;
 
+import KirayoApp.Kirayo.dto.EditProfileDao;
 import KirayoApp.Kirayo.dto.UserCredentialsDto;
 import KirayoApp.Kirayo.dto.UserDetailsDto;
 import KirayoApp.Kirayo.returnStatus.ResponseStatus;
@@ -18,6 +19,9 @@ public interface UserService {
     LoginStatus login(UserCredentialsDto userCredentialsDto) throws IOException;
     ResponseStatus forgetPassword(UserCredentialsDto userCredentialsDto);
 
-    ResponseStatus editProfile(UserCredentialsDto userCredentialsDto,UserDetailsDto userDetailsDto);
+
+
+    ResponseStatus editProfile(String email, EditProfileDao editProfileDao);
+
     UserResponse getUserDetails(String email);
 }

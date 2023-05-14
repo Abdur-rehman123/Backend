@@ -1,6 +1,7 @@
 package KirayoApp.Kirayo.controller;
 
 import KirayoApp.Kirayo.dto.ImageIdsDao;
+import KirayoApp.Kirayo.dto.ProductReviewDao;
 import KirayoApp.Kirayo.dto.ProductUploadDto;
 import KirayoApp.Kirayo.dto.SavedProductDto;
 import KirayoApp.Kirayo.model.ProductImage;
@@ -8,7 +9,6 @@ import KirayoApp.Kirayo.repository.ProductImagesRepository;
 import KirayoApp.Kirayo.returnStatus.ResponseStatus;
 import KirayoApp.Kirayo.service.ProductService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
@@ -28,17 +28,13 @@ public class ProductController {
     @RequestMapping(value = "/product/productupload", method = RequestMethod.POST)
     ResponseEntity<?> productUpload(@RequestParam("productUploadDto") String productUploadDto,
             @RequestParam("images") MultipartFile[] images) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        ProductUploadDto productUploadDto1 = null;
-        try {
-            productUploadDto1 = objectMapper.readValue(productUploadDto, ProductUploadDto.class);
+        //ObjectMapper objectMapper = new ObjectMapper();
+        //ProductUploadDto productUploadDto1;
 
-        } catch (IOException e) {
-            ResponseStatus responseStatus = new ResponseStatus();
-            responseStatus.setStatus(false);
-            responseStatus.setMessage(e.getMessage());
-        }
-        return ResponseEntity.ok(productService.productUpload(productUploadDto1, images));
+           // productUploadDto1 = objectMapper.readValue(productUploadDto, ProductUploadDto.class);
+
+        return  ResponseEntity.ok(productUploadDto);
+        //return ResponseEntity.ok(productService.productUpload(productUploadDto1, images));
     }
 
     @RequestMapping(value = "/product/savedproduct", method = RequestMethod.POST)
@@ -73,19 +69,13 @@ public class ProductController {
         return ResponseEntity.ok(productService.getUserProducts(email));
     }
 
-    @RequestMapping(value="/product/edituserproductdetails", method= RequestMethod.PUT)
-    ResponseEntity<?> editUserProducts(@RequestParam("id") Long id, @RequestParam("productUploadDto") String productUploadDto) throws JsonProcessingException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        ProductUploadDto productUploadDto1;
+    @RequestMapping(value="/product/edituserproductdetails", method= RequestMethod.PATCH)
+    ResponseEntity<?> editUserProducts(@RequestParam("id") Long id, @RequestBody ProductUploadDto productUploadDto) throws JsonProcessingException {
 
-        productUploadDto1 = objectMapper.readValue(productUploadDto, ProductUploadDto.class);
 
-        System.out.println(productUploadDto1);
-
-        //return ResponseEntity.ok(productUploadDto1);
-      return ResponseEntity.ok(productService.editUserProducts(id, productUploadDto1));
+      return ResponseEntity.ok(productService.editUserProducts(id, productUploadDto));
     }
-    @RequestMapping(value = "/product/editproductimages", method = RequestMethod.PUT)
+    @RequestMapping(value = "/product/image/editproductimages", method = RequestMethod.PUT)
     ResponseEntity<?> editProductImages(@RequestParam("id") Long id,@RequestParam("imageId") String imageIds,@RequestParam("images") MultipartFile[] images) throws JsonProcessingException {
         try{
             ImageIdsDao imageIdsDao = new ImageIdsDao();
@@ -106,7 +96,7 @@ public class ProductController {
 
 
     }
-    @RequestMapping(value = "/product/deleteproductimage", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/product/image/deleteproductimage", method = RequestMethod.DELETE)
     ResponseEntity<?> deleteProductImages(@RequestParam("id") String id) {
 
         return ResponseEntity.ok(productService.deleteProductImage(id));
@@ -118,16 +108,36 @@ public class ProductController {
         return ResponseEntity.ok(productService.deleteUserProducts(id));
     }
 
-    @RequestMapping(value = "/product/getusersavedproducts", method = RequestMethod.GET)
+    @RequestMapping(value = "/product/savedproduct/getusersavedproducts", method = RequestMethod.GET)
     ResponseEntity<?> getUserSavedProducts(@RequestParam("email") String email) {
 
         return ResponseEntity.ok(productService.getUserSavedProducts(email));
     }
 
-    @RequestMapping(value = "/product/deleteusersavedproducts", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/product/savedproduct/deleteusersavedproducts", method = RequestMethod.DELETE)
     ResponseEntity<?> deleteUserSavedProducts(@RequestParam("id") Long id) {
 
         return ResponseEntity.ok(productService.deleteUserSavedProducts(id));
+    }
+    @RequestMapping(value = "/product/reviews/productreviews", method = RequestMethod.POST)
+    ResponseEntity<?> getProductReviews(@RequestBody ProductReviewDao productReviewDao) {
+
+        return ResponseEntity.ok(productService.productReview(productReviewDao));
+    }
+    @RequestMapping(value = "/product/reviews/getproductreviews", method = RequestMethod.GET)
+    ResponseEntity<?> getProductReviews(@RequestParam("productId") Long productId) {
+
+        return ResponseEntity.ok(productService.getProductReviews(productId));
+    }
+    @RequestMapping(value = "/product/reviews/getproductreviewsbyuser", method = RequestMethod.GET)
+    ResponseEntity<?> getProductReviewsByUser(@RequestParam("email") String  email) {
+
+        return ResponseEntity.ok(productService.getProductReviewByUser(email));
+    }
+    @RequestMapping(value = "/product/reviews/editproductreviews", method = RequestMethod.PATCH)
+    ResponseEntity<?> editProductReviews(@RequestParam("ReviewId") Long  reviewId, @RequestBody ProductReviewDao productReviewDao) {
+
+        return ResponseEntity.ok(productService.editProductReview(reviewId,productReviewDao));
     }
 
     // Create a REST endpoint to handle payment intent creation
@@ -142,5 +152,6 @@ public class ProductController {
 //
 //        return ResponseEntity.ok(productService.getCustomerBalance(email));
 //    }
+
 
 }

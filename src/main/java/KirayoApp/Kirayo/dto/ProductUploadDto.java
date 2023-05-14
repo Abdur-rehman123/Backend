@@ -75,4 +75,6 @@ public class ProductUploadDto {
     public void setLongitude(String longitude) {
         this.longitude = longitude;
     }
+
+
 }

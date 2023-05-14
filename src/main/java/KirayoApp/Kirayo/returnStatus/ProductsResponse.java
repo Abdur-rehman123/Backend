@@ -15,6 +15,7 @@ public class ProductsResponse {
     private String longitude;
     private List<String> imageids;
     private Boolean is_Saved;
+    private Double rating;
 
     public Long getProductID() {
         return productID;
@@ -100,5 +101,13 @@ public class ProductsResponse {
 
     public void setIs_Saved(Boolean is_Saved) {
         this.is_Saved = is_Saved;
+    }
+
+    public Double getRating() {
+        return rating;
+    }
+
+    public void setRating(Double rating) {
+        this.rating = rating;
     }
 }
