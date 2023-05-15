@@ -1,13 +1,12 @@
 package KirayoApp.Kirayo.service;
 
 import KirayoApp.Kirayo.dto.*;
-import KirayoApp.Kirayo.returnStatus.ProductStatus;
-import KirayoApp.Kirayo.returnStatus.ResponseStatus;
-import KirayoApp.Kirayo.returnStatus.ReviewStatus;
-import KirayoApp.Kirayo.returnStatus.SavedProductStatus;
+import KirayoApp.Kirayo.model.SavedProduct;
+import KirayoApp.Kirayo.returnStatus.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Map;
 
 public interface ProductService {
 
@@ -20,6 +19,10 @@ public interface ProductService {
     ProductStatus getUserProducts(String email);
 
     SavedProductStatus getUserSavedProducts(String email);
+
+    ProductsResponse getProductByProductId(Map<Long, SavedProduct> savedProductIDs, Long productId);
+
+    ProductStatus searchProductByTitle(String email, String title);
 
     ResponseStatus deleteUserSavedProducts(Long email);
 
@@ -39,6 +42,12 @@ public interface ProductService {
     ResponseStatus editProductReview(Long productReviewId, ProductReviewDao productReviewDao);
 
     ResponseStatus productRequest(String email, ProductRequestDao productRequestDao);
+
+    ResponseStatus productAcceptance(Long requestId, ProductAcceptanceDao productAcceptanceDao);
+
+    ProductRequestStatus getProductRequestsByRenter(String email);
+
+    ProductRequestStatus getProductRequestsByRentee(String email);
     // PAYMENT
 
 //    ResponseStatus getCustomerBalance(String email);

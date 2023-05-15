@@ -15,4 +15,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     Optional<List<Product>> findAllProductsByUserName(@Param("email") String email);
 
 
+    List<Product> findByTitleContainingIgnoreCase(String title);
 }

@@ -143,7 +143,7 @@ public class ProductServiceImpl implements ProductService {
                         .mapToDouble(ProductReview::getRating)
                         .average()
                         .orElse(0.0);
-
+                averageRating= Double.parseDouble(String.format("%.2f",averageRating));
                 if (savedProductIDs.containsKey(product.getProductId())) {
                     productsResponse.setIs_Saved(true);
 
@@ -172,19 +172,14 @@ public class ProductServiceImpl implements ProductService {
                 }
                 productsResponse.setImageids(imageIds);
                 productsResponses.add(productsResponse);
-                productStatus.setProductsResponse(productsResponses);
-                productStatus.setStatus(true);
-                productStatus.setMessage("Product Found");
+
             }
         }
 
-        // ArrayList<Set<ProductImages>> productImages=new ArrayList<>;
-        // for(Product product:products){
-        //
-        // productImages.add(product.getProductImages());
-        //
-        // }
-        // for()
+
+        productStatus.setProductsResponse(productSorter.sortProductsByTimeStampDescending(productsResponses));
+        productStatus.setStatus(true);
+        productStatus.setMessage("Product Found");
 
         return productStatus;
     }
@@ -217,6 +212,7 @@ public class ProductServiceImpl implements ProductService {
                             .mapToDouble(ProductReview::getRating)
                             .average()
                             .orElse(0.0);
+                    averageRating= Double.parseDouble(String.format("%.2f",averageRating));
                     productsResponse.setEmail(userCredentials.getEmail());
                     productsResponse.setProductID(product.getProductId());
                     productsResponse.setTitle(product.getTitle());
@@ -237,13 +233,10 @@ public class ProductServiceImpl implements ProductService {
                     }
                     productsResponse.setImageids(imageIds);
                     productsResponses.add(productsResponse);
-                    productStatus.setProductsResponse(productsResponses);
+                    productStatus.setProductsResponse(productSorter.sortProductsByTimeStampDescending(productsResponses));
                     productStatus.setStatus(true);
                     productStatus.setMessage("Product Found");
-                    List<ProductsResponse> productssort = productStatus.getProductsResponse();
 
-
-                    new ProductSorter().sortProductsByTimeStampDescending(productssort);
 
                 }
             }
@@ -278,6 +271,7 @@ public class ProductServiceImpl implements ProductService {
                         .mapToDouble(ProductReview::getRating)
                         .average()
                         .orElse(0.0);
+                averageRating= Double.parseDouble(String.format("%.2f",averageRating));
                 savedProductResponse.setSavedProductId(savedProduct.getId());
                 savedProductResponse.setProductID(savedProduct.getProduct().getProductId());
                 savedProductResponse.setEmail(email);
@@ -300,11 +294,12 @@ public class ProductServiceImpl implements ProductService {
                 }
                 savedProductResponse.setImageids(imageIds);
                 savedProductResponses.add(savedProductResponse);
-                savedProductStatus.setSavedProductResponses(savedProductResponses);
-                savedProductStatus.setStatus(true);
-                savedProductStatus.setMessage("Product Found");
+
 
             }
+            savedProductStatus.setSavedProductResponses(productSorter.sortSavedProductsByTimeStampDescending(savedProductResponses));
+            savedProductStatus.setStatus(true);
+            savedProductStatus.setMessage("Product Found");
         }
 
         catch (NoSuchElementException e) {
@@ -325,6 +320,71 @@ public class ProductServiceImpl implements ProductService {
         // }
 
         return savedProductStatus;
+    }
+    @Override
+    public ProductsResponse getProductByProductId(Map<Long, SavedProduct> savedProductIDs,Long productId){
+        ProductsResponse productsResponse=new ProductsResponse();
+        Product product;
+        product = productRepository.findById(productId).orElseThrow();
+        UserCredentials userCredentials = userCredentialsRepository.findById(product.getUser().getUserid())
+                .orElseThrow();
+        List<ProductReview> productReviews=productReviewRepository.findAllByProductProductId(product.getProductId());
+
+        double averageRating = productReviews.stream()
+                .mapToDouble(ProductReview::getRating)
+                .average()
+                .orElse(0.0);
+        averageRating= Double.parseDouble(String.format("%.2f",averageRating));
+        productsResponse.setIs_Saved(savedProductIDs.containsKey(product.getProductId()));
+        productsResponse.setEmail(userCredentials.getEmail());
+        productsResponse.setProductID(product.getProductId());
+        productsResponse.setTitle(product.getTitle());
+        productsResponse.setDescription(product.getDescription());
+        productsResponse.setCategory(product.getCategory());
+        productsResponse.setPrice(product.getPrice());
+        productsResponse.setTimeStamp(product.getTimestamp());
+        productsResponse.setRating(averageRating);
+        ProductLocation productLocation = productLocationRepository
+                .findProductLocationByProductId(product.getProductId());
+        productsResponse.setLatitude(productLocation.getLatitude());
+        productsResponse.setLongitude(productLocation.getLongitude());
+
+        Set<ProductImage> productImages = product.getProductImages();
+        List<String> imageIds = new ArrayList<>();
+        for (ProductImage productImage : productImages) {
+            imageIds.add(productImage.getImageId());
+        }
+        productsResponse.setImageids(imageIds);
+
+
+        return productsResponse;
+    }
+    @Override
+    public ProductStatus searchProductByTitle(String email, String title){
+        ProductStatus productStatus=new ProductStatus();
+        List<Product> products=productRepository.findByTitleContainingIgnoreCase(title);
+        if(products.isEmpty()){
+            productStatus.setStatus(false);
+            productStatus.setMessage("No Product Found");
+        }
+        else{
+            List<SavedProduct> savedProducts=new ArrayList<>();
+            savedProducts = savedProductRepository.findAllSavedProductsByUserName(email).orElseThrow();
+            Map<Long, SavedProduct> savedProductIDs = savedProducts.stream()
+                    .collect(Collectors.toMap(sp -> sp.getProduct().getProductId(), sp -> sp));
+            List<ProductsResponse> productsResponses=new ArrayList<>();
+
+            for(Product product:products){
+                productsResponses.add(getProductByProductId(savedProductIDs,product.getProductId()));
+            }
+            productStatus.setProductsResponse(productsResponses);
+            productStatus.setStatus(true);
+            productStatus.setMessage("Product Found");
+
+        }
+
+
+        return productStatus;
     }
 
     @Override
@@ -645,6 +705,87 @@ public class ProductServiceImpl implements ProductService {
         responseStatus.setStatus(true);
 
         return responseStatus;
+    }
+
+    @Override
+    public ResponseStatus productAcceptance(Long requestId, ProductAcceptanceDao productAcceptanceDao) {
+        ResponseStatus responseStatus=new ResponseStatus();
+        ProductRequest productRequest=productRequestRepository.findById(requestId).orElseThrow();
+        if(Objects.equals(productAcceptanceDao.getIs_accept(), "accept")){
+            productRequest.setRequestStatus("accept");
+            responseStatus.setStatus(true);
+            responseStatus.setMessage("Product Request Accepted");
+        }
+        else{
+            productRequest.setRequestStatus("reject");
+            responseStatus.setStatus(false);
+            responseStatus.setMessage("Product Request Rejected");
+        }
+        productRequestRepository.save(productRequest);
+        return responseStatus;
+    }
+
+    @Override
+    public ProductRequestStatus getProductRequestsByRenter(String email) {
+        UserDetails userDetails=userDetailsRepository.findByEmail(email);
+        ProductRequestStatus productRequestStatus=new ProductRequestStatus();
+        List<ProductRequest> productRequests=productRequestRepository.findAllByRenterUserid(userDetails.getUserid());
+        if(productRequests.isEmpty()){
+            productRequestStatus.setStatus(false);
+            productRequestStatus.setMessage("No product Requested by you");
+        }
+        else{
+            List<SavedProduct> savedProducts=new ArrayList<>();
+            savedProducts = savedProductRepository.findAllSavedProductsByUserName(email).orElseThrow();
+            Map<Long, SavedProduct> savedProductIDs = savedProducts.stream()
+                    .collect(Collectors.toMap(sp -> sp.getProduct().getProductId(), sp -> sp));
+            List<ProductRequestResponse> productRequestResponses=new ArrayList<>();
+            for(ProductRequest productRequest:productRequests){
+                ProductRequestResponse productRequestResponse=new ProductRequestResponse();
+                productRequestResponse.setRequestId(productRequest.getRequestId());
+                productRequestResponse.setRequestStatus(productRequest.getRequestStatus());
+                productRequestResponse.setTimeStamp(productRequest.getTimestamp());
+                productRequestResponse.setProduct(getProductByProductId(savedProductIDs,productRequest.getProduct().getProductId()));
+                productRequestResponses.add(productRequestResponse);
+            }
+            productRequestStatus.setProductRequestResponses(productSorter.sortProductRequestResponsesByTimeStampDescending(productRequestResponses));
+            productRequestStatus.setStatus(true);
+            productRequestStatus.setMessage("Product Requests Found");
+        }
+
+
+        return productRequestStatus;
+    }
+
+    @Override
+    public ProductRequestStatus getProductRequestsByRentee(String email) {
+        UserDetails userDetails=userDetailsRepository.findByEmail(email);
+        ProductRequestStatus productRequestStatus=new ProductRequestStatus();
+        List<ProductRequest> productRequests=productRequestRepository.findAllByProductUserUserid(userDetails.getUserid());
+        if(productRequests.isEmpty()){
+            productRequestStatus.setStatus(false);
+            productRequestStatus.setMessage("No product Requested by you");
+        }
+        else{
+            List<SavedProduct> savedProducts=new ArrayList<>();
+            savedProducts = savedProductRepository.findAllSavedProductsByUserName(email).orElseThrow();
+            Map<Long, SavedProduct> savedProductIDs = savedProducts.stream()
+                    .collect(Collectors.toMap(sp -> sp.getProduct().getProductId(), sp -> sp));
+            List<ProductRequestResponse> productRequestResponses=new ArrayList<>();
+            for(ProductRequest productRequest:productRequests){
+                ProductRequestResponse productRequestResponse=new ProductRequestResponse();
+                productRequestResponse.setRequestId(productRequest.getRequestId());
+                productRequestResponse.setRequestStatus(productRequest.getRequestStatus());
+                productRequestResponse.setTimeStamp(productRequest.getTimestamp());
+                productRequestResponse.setProduct(getProductByProductId(savedProductIDs,productRequest.getProduct().getProductId()));
+                productRequestResponses.add(productRequestResponse);
+            }
+            productRequestStatus.setProductRequestResponses(productSorter.sortProductRequestResponsesByTimeStampDescending(productRequestResponses));
+            productRequestStatus.setStatus(true);
+            productRequestStatus.setMessage("Product Requests Found");
+        }
+
+        return productRequestStatus;
     }
 
 

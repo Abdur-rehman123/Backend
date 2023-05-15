@@ -59,6 +59,11 @@ public class ProductController {
 
         return ResponseEntity.ok(productService.getAllProducts(email));
     }
+    @RequestMapping(value = "/product/getaproductsbytitle", method = RequestMethod.GET)
+    ResponseEntity<?> getProductsByTitle(@RequestParam("email") String email,@RequestParam("title") String title) {
+
+        return ResponseEntity.ok(productService.searchProductByTitle(email,title));
+    }
 
     @RequestMapping(value = "/product/getuserproducts", method = RequestMethod.GET)
     ResponseEntity<?> getUserProducts(@RequestParam("email") String email) {
@@ -108,6 +113,7 @@ public class ProductController {
     @RequestMapping(value = "/product/savedproduct/getusersavedproducts", method = RequestMethod.GET)
     ResponseEntity<?> getUserSavedProducts(@RequestParam("email") String email) {
 
+
         return ResponseEntity.ok(productService.getUserSavedProducts(email));
     }
 
@@ -137,10 +143,28 @@ public class ProductController {
         return ResponseEntity.ok(productService.editProductReview(reviewId,productReviewDao));
     }
     @RequestMapping(value = "/product/reservation/productrequest", method = RequestMethod.POST)
-    ResponseEntity<?> editProductReviews(@RequestParam("email") String email, @RequestBody ProductRequestDao productRequestDao) {
+    ResponseEntity<?> productRequests(@RequestParam("email") String email, @RequestBody ProductRequestDao productRequestDao) {
 
         return ResponseEntity.ok(productService.productRequest(email,productRequestDao));
     }
+    @RequestMapping(value = "/product/reservation/getproductrequestbyrenter", method = RequestMethod.GET)
+    ResponseEntity<?> getProductRequestsByRenter(@RequestParam("email") String email) {
+
+        return ResponseEntity.ok(productService.getProductRequestsByRenter(email));
+    }
+    @RequestMapping(value = "/product/reservation/getproductrequestbyrentee", method = RequestMethod.GET)
+    ResponseEntity<?> getProductRequestsByRentee(@RequestParam("email") String email) {
+
+        return ResponseEntity.ok(productService.getProductRequestsByRentee(email));
+    }
+    @RequestMapping(value = "/product/reservation/productacceptance", method = RequestMethod.POST)
+    ResponseEntity<?> productRequests(@RequestParam("requestId") Long requestId,@RequestBody ProductAcceptanceDao productAcceptanceDao) {
+
+        return ResponseEntity.ok(productService.productAcceptance(requestId,productAcceptanceDao));
+    }
+
+
+
 
 
     // Create a REST endpoint to handle payment intent creation
