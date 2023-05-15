@@ -1,9 +1,13 @@
 package KirayoApp.Kirayo.model;
 
-import javax.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+import javax.persistence.*;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.util.Date;
+@Getter
+@Setter
 
 @Entity
 @Table(name = "reservation")
@@ -19,10 +23,10 @@ public class Reservation {
     private ProductRequest requestId;
 
     @Column(name = "started_at", nullable = false)
-    private LocalDateTime startedAt;
+    private Date startedAt;
 
     @Column(name = "ended_at", nullable = false)
-    private LocalDateTime endedAt;
+    private Date endedAt;
 
     @Column(name = "total_price", nullable = false)
     private BigDecimal totalPrice;

@@ -11,7 +11,7 @@ public class ProductUploadDto {
     private Date timeStamp;
     private String latitude;
     private String longitude;
-
+    private boolean productStatus;
 
 
     public String getEmail() {
@@ -76,5 +76,11 @@ public class ProductUploadDto {
         this.longitude = longitude;
     }
 
+    public boolean isProductStatus() {
+        return productStatus;
+    }
 
+    public void setProductStatus(boolean productStatus) {
+        this.productStatus = productStatus;
+    }
 }
