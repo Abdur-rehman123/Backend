@@ -64,7 +64,7 @@ public class UserController {
 
     //SIGNUP consumes = "multipart/form-data"
     @RequestMapping(value="/user/signup",method= RequestMethod.POST)
-    ResponseEntity<?> saveUser(@RequestParam("signupDto") String signupDto, @RequestParam("image")MultipartFile image) throws IOException {
+    ResponseEntity<?> saveUser(@RequestParam("signupDto") String signupDto, @RequestParam("image") MultipartFile image) throws IOException {
         ObjectMapper objectMapper=new ObjectMapper();
         SignupDto signupDto1= null;
         try {

@@ -82,51 +82,55 @@ public class UserServiceImpl implements UserService
     @Override
     public ResponseStatus signup(UserDetailsDto userDetailsDto, UserCredentialsDto userCredentialsDto, MultipartFile image) throws IOException {
         ResponseStatus responseStatus=new ResponseStatus();
-        Optional<UserCredentials> userCredentials2;
-        userCredentials2=userCredentialsRepository.findByEmail(userCredentialsDto.getEmail());
-        if(userCredentials2.isEmpty())
+        Optional<UserCredentials> userCredentialsEmail;
+        userCredentialsEmail=userCredentialsRepository.findByEmail(userCredentialsDto.getEmail());
+        if(userCredentialsEmail.isEmpty())
         {
-            UserImage userImage = new UserImage();
-            if(!image.isEmpty()){
-                String imageId = imageIdGenerator.generateImageId();
+            Optional<UserCredentials>userCredentialsPhoneNumber=userCredentialsRepository.findByPhoneNumber(userCredentialsDto.getPhoneNumber());
+            if(userCredentialsPhoneNumber.isEmpty()) {
+                UserImage userImage = new UserImage();
+                if (!image.isEmpty()) {
+                    String imageId = imageIdGenerator.generateImageId();
 
-                userImage.setImageId(imageId);
-                userImage.setImage(image.getBytes());
-                userImageRepository.save(userImage);
+                    userImage.setImageId(imageId);
+                    userImage.setImage(image.getBytes());
+                    userImageRepository.save(userImage);
 
-                userDetailsDto.setImage(userImage.getImageId());
+                    userDetailsDto.setImage(userImage.getImageId());
 
+                } else {
+                    userDetailsDto.setImage(null);
+                    userImage.setImage(null);
+                }
+
+
+                UserCredentials userCredentials = new UserCredentials();
+                userCredentials.setEmail(userCredentialsDto.getEmail());
+                userCredentials.setPhoneNumber(userCredentialsDto.getPhoneNumber());
+                userCredentials.setPassword(new BCryptPasswordEncoder().encode(userCredentialsDto.getPassword()));
+                userCredentials.setIsActive(true);
+                userCredentialsRepository.save(userCredentials);
+
+                UserDetails userDetails = new UserDetails();
+                userDetails.setCity(userDetailsDto.getCity());
+                userDetails.setFullname(userDetailsDto.getFullName());
+                userDetails.setDob(userDetailsDto.getDob());
+                userDetails.setImage(userDetailsDto.getImage());
+                userDetails.setUserid(userCredentials.getUserId());
+                userDetailsRepository.save(userDetails);
+
+
+                responseStatus.setStatus(true);
+                responseStatus.setMessage("SignUp Successful");
             }
             else{
-                userDetailsDto.setImage(null);
-                userImage.setImage(null);
+                responseStatus.setStatus(false);
+                responseStatus.setMessage("SignUp UnSuccessful (PhoneNumber already Exist)");
             }
-
-
-
-
-            UserCredentials userCredentials=new UserCredentials();
-            userCredentials.setEmail(userCredentialsDto.getEmail());
-            userCredentials.setPhoneNumber(userCredentialsDto.getPhoneNumber());
-            userCredentials.setPassword(new BCryptPasswordEncoder().encode(userCredentialsDto.getPassword()));
-            userCredentials.setIsActive(true);
-            userCredentialsRepository.save(userCredentials);
-
-            UserDetails userDetails=new UserDetails();
-            userDetails.setCity(userDetailsDto.getCity());
-            userDetails.setFullname(userDetailsDto.getFullName());
-            userDetails.setDob(userDetailsDto.getDob());
-            userDetails.setImage(userDetailsDto.getImage());
-            userDetails.setUserid(userCredentials.getUserId());
-            userDetailsRepository.save(userDetails);
-
-
-            responseStatus.setStatus(true);
-            responseStatus.setMessage("SignUp Successful");
         }
         else{
             responseStatus.setStatus(false);
-            responseStatus.setMessage("SignUp UnSuccessful");
+            responseStatus.setMessage("SignUp UnSuccessful (Email already Exist)");
         }
         return responseStatus;
 

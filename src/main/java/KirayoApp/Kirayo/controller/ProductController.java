@@ -6,6 +6,7 @@ import KirayoApp.Kirayo.repository.ProductImagesRepository;
 import KirayoApp.Kirayo.returnStatus.ResponseStatus;
 import KirayoApp.Kirayo.service.ProductService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
@@ -25,13 +26,13 @@ public class ProductController {
     @RequestMapping(value = "/product/productupload", method = RequestMethod.POST)
     ResponseEntity<?> productUpload(@RequestParam("productUploadDto") String productUploadDto,
             @RequestParam("images") MultipartFile[] images) throws IOException {
-        //ObjectMapper objectMapper = new ObjectMapper();
-        //ProductUploadDto productUploadDto1;
+        ObjectMapper objectMapper = new ObjectMapper();
+        ProductUploadDto productUploadDto1;
 
-           // productUploadDto1 = objectMapper.readValue(productUploadDto, ProductUploadDto.class);
+            productUploadDto1 = objectMapper.readValue(productUploadDto, ProductUploadDto.class);
 
-        return  ResponseEntity.ok(productUploadDto);
-        //return ResponseEntity.ok(productService.productUpload(productUploadDto1, images));
+        //return  ResponseEntity.ok(productUploadDto);
+        return ResponseEntity.ok(productService.productUpload(productUploadDto1, images));
     }
 
     @RequestMapping(value = "/product/savedproduct", method = RequestMethod.POST)
