@@ -10,4 +10,5 @@ public interface ProductRequestRepository extends JpaRepository<ProductRequest,L
     List<ProductRequest> findAllByRenterUserid(Long renterId);
     List<ProductRequest> findAllByProductUserUserid(Long renteeId);
 
+
 }

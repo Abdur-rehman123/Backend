@@ -14,8 +14,11 @@ public class ProductsResponse {
     private String latitude;
     private String longitude;
     private List<String> imageids;
+
+    private List<ReservationResponse> productReservations;
     private Boolean is_Saved;
     private Double rating;
+
 
     public Long getProductID() {
         return productID;
@@ -110,4 +113,14 @@ public class ProductsResponse {
     public void setRating(Double rating) {
         this.rating = rating;
     }
+
+    public List<ReservationResponse> getProductReservations() {
+        return productReservations;
+    }
+
+    public void setProductReservations(List<ReservationResponse> productReservations) {
+        this.productReservations = productReservations;
+    }
+
+
 }

@@ -4,8 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 @Getter
 @Setter
 
@@ -23,13 +22,13 @@ public class Reservation {
     private ProductRequest requestId;
 
     @Column(name = "started_at", nullable = false)
-    private Date startedAt;
+    private LocalDate startedAt;
 
     @Column(name = "ended_at", nullable = false)
-    private Date endedAt;
+    private LocalDate endedAt;
 
     @Column(name = "total_price", nullable = false)
-    private BigDecimal totalPrice;
+    private Double totalPrice;
 
     // constructors, getters, and setters
     // ...

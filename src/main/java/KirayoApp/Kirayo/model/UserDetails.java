@@ -1,5 +1,6 @@
 package KirayoApp.Kirayo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import java.util.Date;
 @Table(name = "user_details")
 @Getter
 @Setter
+@JsonIgnoreProperties({"hibernateLazyInitializer"})
 public class UserDetails {
 
 

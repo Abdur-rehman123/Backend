@@ -39,6 +39,8 @@ public class ProductServiceImpl implements ProductService {
     private ProductSorter productSorter;
     @Autowired
     private ProductRequestRepository productRequestRepository;
+    @Autowired
+    private ReservationRepository reservationRepository;
 
 //    @Value("${stripe.api.secretKey}")
 //    String stripeKey;
@@ -129,17 +131,42 @@ public class ProductServiceImpl implements ProductService {
         ProductStatus productStatus = new ProductStatus();
 
         List<Product> products;
+        List<Product> productsByUserName;
         List<SavedProduct> savedProducts;
         savedProducts = savedProductRepository.findAllSavedProductsByUserName(email).orElseThrow();
         products = productRepository.findAll();
+        productsByUserName = productRepository.findAllProductsByUserName(email).orElseThrow();
+
+
+        Map<Long, Product> productIDs = productsByUserName.stream()
+                .collect(Collectors.toMap(sp -> sp.getProductId(), sp -> sp));
         List<ProductsResponse> productsResponses = new ArrayList<>();
         Map<Long, SavedProduct> savedProductIDs = savedProducts.stream()
                 .collect(Collectors.toMap(sp -> sp.getProduct().getProductId(), sp -> sp));
 
         for (Product product : products) {
-            if (product.getProductStatus()) {
+            if (product.getProductStatus() && !productIDs.containsKey(product.getProductId())) {
+
                 ProductsResponse productsResponse = new ProductsResponse();
-                List<ProductReview> productReviews=productReviewRepository.findAllByProductProductId(product.getProductId());
+                List<ReservationResponse> reservationResponses=new ArrayList<>();
+                List<ProductReview> productReviews=new ArrayList<>();
+                productReviews=productReviewRepository.findAllByProductProductId(product.getProductId());
+                List<Reservation> reservations=  reservationRepository.findAllByRequestIdProductProductId(product.getProductId());
+                if(reservations.isEmpty()){
+                    reservationResponses = null;
+                }
+                else{
+                    for(Reservation reservation:reservations){
+                        ReservationResponse reservationResponse=new ReservationResponse();
+                        reservationResponse.setStartedAt(reservation.getStartedAt());
+                        reservationResponse.setEndedAt(reservation.getEndedAt());
+                        reservationResponses.add(reservationResponse);
+                    }
+
+                }
+
+
+
                 double averageRating = productReviews.stream()
                         .mapToDouble(ProductReview::getRating)
                         .average()
@@ -166,13 +193,17 @@ public class ProductServiceImpl implements ProductService {
                 productsResponse.setLatitude(productLocation.getLatitude());
                 productsResponse.setLongitude(productLocation.getLongitude());
 
+
                 Set<ProductImage> productImages = product.getProductImages();
                 List<String> imageIds = new ArrayList<>();
                 for (ProductImage productImage : productImages) {
                     imageIds.add(productImage.getImageId());
                 }
                 productsResponse.setImageids(imageIds);
+
+                productsResponse.setProductReservations(reservationResponses);
                 productsResponses.add(productsResponse);
+
 
             }
         }
@@ -716,8 +747,14 @@ public class ProductServiceImpl implements ProductService {
     public ResponseStatus productAcceptance(Long requestId, ProductAcceptanceDao productAcceptanceDao) {
         ResponseStatus responseStatus=new ResponseStatus();
         ProductRequest productRequest=productRequestRepository.findById(requestId).orElseThrow();
-        if(Objects.equals(productAcceptanceDao.getIs_accept(), "accept")){
+        Reservation reservation= new Reservation();
+        if(productAcceptanceDao.getIs_accept()){
             productRequest.setRequestStatus("accept");
+            reservation.setStartedAt(productRequest.getStartDate());
+            reservation.setEndedAt(productRequest.getEndDate());
+            reservation.setTotalPrice(productRequest.getTotalPrice());
+            reservation.setRequestId(productRequest);
+            reservationRepository.save(reservation);
             responseStatus.setStatus(true);
             responseStatus.setMessage("Product Request Accepted");
         }

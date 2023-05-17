@@ -19,4 +19,5 @@ public class AppConfig implements WebMvcConfigurer {
     public MultipartResolver multipartResolver() {
         return new CommonsMultipartResolver();
     }
+
 }
