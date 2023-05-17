@@ -698,6 +698,9 @@ public class ProductServiceImpl implements ProductService {
         productRequest.setProduct(product);
         productRequest.setRequestStatus("pending");
         productRequest.setTimestamp(productRequestDao.getTimeStamp());
+        productRequest.setStartDate(productRequestDao.getStartDate());
+        productRequest.setEndDate(productRequestDao.getEndDate());
+        productRequest.setTotalPrice(productRequestDao.getTotalPrice());
         productRequest.setRenter(userDetails);
         productRequestRepository.save(productRequest);
         ResponseStatus responseStatus=new ResponseStatus();
@@ -742,6 +745,9 @@ public class ProductServiceImpl implements ProductService {
             List<ProductRequestResponse> productRequestResponses=new ArrayList<>();
             for(ProductRequest productRequest:productRequests){
                 ProductRequestResponse productRequestResponse=new ProductRequestResponse();
+                productRequestResponse.setStartDate(productRequest.getStartDate());
+                productRequestResponse.setEndDate(productRequest.getEndDate());
+                productRequestResponse.setTotalPrice(productRequest.getTotalPrice());
                 productRequestResponse.setRequestId(productRequest.getRequestId());
                 productRequestResponse.setRequestStatus(productRequest.getRequestStatus());
                 productRequestResponse.setTimeStamp(productRequest.getTimestamp());
@@ -777,6 +783,9 @@ public class ProductServiceImpl implements ProductService {
                 productRequestResponse.setRequestId(productRequest.getRequestId());
                 productRequestResponse.setRequestStatus(productRequest.getRequestStatus());
                 productRequestResponse.setTimeStamp(productRequest.getTimestamp());
+                productRequestResponse.setStartDate(productRequest.getStartDate());
+                productRequestResponse.setEndDate(productRequest.getEndDate());
+                productRequestResponse.setTotalPrice(productRequest.getTotalPrice());
                 productRequestResponse.setProduct(getProductByProductId(savedProductIDs,productRequest.getProduct().getProductId()));
                 productRequestResponses.add(productRequestResponse);
             }

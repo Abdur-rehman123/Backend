@@ -22,6 +22,13 @@ public class ProductRequest {
     @Column(name = "timestamp")
     private Date timestamp;
 
+    @Column(name = "start_date")
+    private Date startDate;
+    @Column(name = "end_date")
+    private Date endDate;
+    @Column(name = "total_price")
+    private double totalPrice;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
@@ -29,6 +36,7 @@ public class ProductRequest {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "renter_id", nullable = false)
     private UserDetails renter;
+
 
 
     // constructors, getters and setters

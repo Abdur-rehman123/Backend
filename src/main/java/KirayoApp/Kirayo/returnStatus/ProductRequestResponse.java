@@ -7,6 +7,9 @@ public class ProductRequestResponse {
     private String requestStatus;
     private Date timeStamp;
     private ProductsResponse products;
+    private Date startDate;
+    private Date endDate;
+    private double totalPrice;
 
     public Long getRequestId() {
         return requestId;
@@ -38,5 +41,29 @@ public class ProductRequestResponse {
 
     public void setProduct(ProductsResponse products) {
         this.products = products;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(double totalPrice) {
+        this.totalPrice = totalPrice;
     }
 }
