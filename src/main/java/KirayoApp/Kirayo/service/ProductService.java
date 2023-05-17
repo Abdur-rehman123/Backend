@@ -51,7 +51,7 @@ public interface ProductService {
 
     ProductRequestStatus getProductRequestsByRentee(String email);
 
-    ResponseStatus reserveProductPaymentIntent(String paymentData) throws IOException;
+    ResponseStatus reserveProductPaymentIntent(String email, Long amount) throws IOException;
 
     ResponseStatus getCustomerBalance(String email);
     // PAYMENT

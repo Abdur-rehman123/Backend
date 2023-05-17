@@ -175,9 +175,9 @@ public class ProductController {
 
     // Create a REST endpoint to handle payment intent creation
     @RequestMapping(value = "/payment/create-payment-intent", method = RequestMethod.POST)
-    ResponseEntity<?> reserveProductPaymentIntent(@RequestParam("paymentData") String paymentData) throws IOException {
+    ResponseEntity<?> reserveProductPaymentIntent(@RequestParam("email") String email,@RequestParam("amount") Long amount) throws IOException {
 
-        return ResponseEntity.ok(productService.reserveProductPaymentIntent(paymentData));
+        return ResponseEntity.ok(productService.reserveProductPaymentIntent(email,amount));
     }
 
     @RequestMapping(value = "/payment/getCustomerBalance", method = RequestMethod.GET)

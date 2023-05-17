@@ -7,8 +7,6 @@ import KirayoApp.Kirayo.model.*;
 import KirayoApp.Kirayo.repository.*;
 import KirayoApp.Kirayo.returnStatus.*;
 import KirayoApp.Kirayo.service.ProductService;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Charge;
@@ -892,16 +890,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ResponseStatus reserveProductPaymentIntent(String paymentData) throws IOException {
+    public ResponseStatus reserveProductPaymentIntent(String email, Long amount) throws IOException {
         ResponseStatus paymentResponse = new ResponseStatus();
         try {
             Stripe.apiKey = stripeKey;
-            byte[] paymentDataBytes = paymentData.getBytes();
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode paymentDataJson = objectMapper.readTree(paymentDataBytes);
 
-            Long amount = paymentDataJson.get("amount").asLong();
-            String email = paymentDataJson.get("email").toString();
             try {
 
                 String customerId = getCustomerIdByEmail(email);
@@ -912,7 +905,7 @@ public class ProductServiceImpl implements ProductService {
                 params.put("payment_method_types", Arrays.asList("card"));
                 params.put("return_url", "https://example.com/return");
                 params.put("payment_method", "pm_card_visa");
-                params.put("customer", customerId);
+               // params.put("customer", customerId);
                 params.put("confirm", true);
 
                 PaymentIntent paymentIntent = PaymentIntent.create(params);
