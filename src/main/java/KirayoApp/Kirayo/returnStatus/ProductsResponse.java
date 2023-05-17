@@ -18,6 +18,7 @@ public class ProductsResponse {
     private List<ReservationResponse> productReservations;
     private Boolean is_Saved;
     private Double rating;
+    private int totalreviews;
 
 
     public Long getProductID() {
@@ -122,5 +123,11 @@ public class ProductsResponse {
         this.productReservations = productReservations;
     }
 
+    public int getTotalreviews() {
+        return totalreviews;
+    }
 
+    public void setTotalreviews(int totalreviews) {
+        this.totalreviews = totalreviews;
+    }
 }

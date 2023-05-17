@@ -148,6 +148,11 @@ public class ProductController {
 
         return ResponseEntity.ok(productService.productRequest(email,productRequestDao));
     }
+    @RequestMapping(value = "/product/reservation/cancelproductrequest", method = RequestMethod.DELETE)
+    ResponseEntity<?> cancelProductRequest(@RequestParam("requestId") Long requestId) {
+
+        return ResponseEntity.ok(productService.productCancellationByRenter(requestId));
+    }
     @RequestMapping(value = "/product/reservation/getproductrequestbyrenter", method = RequestMethod.GET)
     ResponseEntity<?> getProductRequestsByRenter(@RequestParam("email") String email) {
 

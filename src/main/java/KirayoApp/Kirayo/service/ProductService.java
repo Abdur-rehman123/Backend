@@ -45,6 +45,8 @@ public interface ProductService {
 
     ResponseStatus productAcceptance(Long requestId, ProductAcceptanceDao productAcceptanceDao);
 
+    ResponseStatus productCancellationByRenter(Long requestId);
+
     ProductRequestStatus getProductRequestsByRenter(String email);
 
     ProductRequestStatus getProductRequestsByRentee(String email);

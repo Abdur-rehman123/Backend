@@ -60,7 +60,7 @@ public class ProductServiceImpl implements ProductService {
             product.setCategory(productUploadDto.getCategory());
             product.setTitle(productUploadDto.getTitle());
             product.setDescription(productUploadDto.getDescription());
-            product.setPrice(productUploadDto.getPrice());
+            product.setPrice(productUploadDto.getPrice()+productUploadDto.getPrice()*0.10);
             product.setTimestamp(productUploadDto.getTimeStamp());
             product.setProductStatus(true);
 
@@ -192,7 +192,7 @@ public class ProductServiceImpl implements ProductService {
                         .findProductLocationByProductId(product.getProductId());
                 productsResponse.setLatitude(productLocation.getLatitude());
                 productsResponse.setLongitude(productLocation.getLongitude());
-
+                productsResponse.setTotalreviews(productReviews.size());
 
                 Set<ProductImage> productImages = product.getProductImages();
                 List<String> imageIds = new ArrayList<>();
@@ -250,7 +250,7 @@ public class ProductServiceImpl implements ProductService {
                     productsResponse.setTitle(product.getTitle());
                     productsResponse.setDescription(product.getDescription());
                     productsResponse.setCategory(product.getCategory());
-                    productsResponse.setPrice(product.getPrice());
+                    productsResponse.setPrice(product.getPrice()-product.getPrice()*0.10);
                     productsResponse.setTimeStamp(product.getTimestamp());
                     productsResponse.setRating(averageRating);
                     ProductLocation productLocation = productLocationRepository
@@ -748,7 +748,7 @@ public class ProductServiceImpl implements ProductService {
         ResponseStatus responseStatus=new ResponseStatus();
         ProductRequest productRequest=productRequestRepository.findById(requestId).orElseThrow();
         Reservation reservation= new Reservation();
-        if(productAcceptanceDao.getIs_accept()){
+        if(productAcceptanceDao.getIs_accept() & Objects.equals(productRequest.getRequestStatus(), "pending")){
             productRequest.setRequestStatus("accept");
             reservation.setStartedAt(productRequest.getStartDate());
             reservation.setEndedAt(productRequest.getEndDate());
@@ -758,12 +758,33 @@ public class ProductServiceImpl implements ProductService {
             responseStatus.setStatus(true);
             responseStatus.setMessage("Product Request Accepted");
         }
-        else{
+        else if(!productAcceptanceDao.getIs_accept() & Objects.equals(productRequest.getRequestStatus(), "pending")){
+
             productRequest.setRequestStatus("reject");
-            responseStatus.setStatus(false);
+            responseStatus.setStatus(true);
             responseStatus.setMessage("Product Request Rejected");
         }
+        else{
+            responseStatus.setStatus(false);
+            responseStatus.setMessage("Already "+productRequest.getRequestStatus()+"ed");
+        }
         productRequestRepository.save(productRequest);
+        return responseStatus;
+    }
+    @Override
+    public ResponseStatus productCancellationByRenter(Long requestId){
+        ResponseStatus responseStatus=new ResponseStatus();
+        ProductRequest productRequest=productRequestRepository.findById(requestId).orElseThrow();
+
+        if (!Objects.equals(productRequest.getRequestStatus(), "pending")){
+            productRequestRepository.delete(productRequest);
+            responseStatus.setStatus(true);
+            responseStatus.setMessage("Cancelled Successfully");
+        }
+        else{
+            responseStatus.setStatus(false);
+            responseStatus.setMessage("Already "+productRequest.getRequestStatus()+"ed");
+        }
         return responseStatus;
     }
 
