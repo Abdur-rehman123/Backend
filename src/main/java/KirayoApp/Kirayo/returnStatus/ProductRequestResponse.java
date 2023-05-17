@@ -10,7 +10,7 @@ public class ProductRequestResponse {
     private ProductsResponse products;
     private LocalDate startDate;
     private LocalDate endDate;
-    private Long Days;
+    private Long totalDays;
     private double totalPrice;
 
     public Long getRequestId() {
@@ -61,12 +61,12 @@ public class ProductRequestResponse {
         this.endDate = endDate;
     }
 
-    public Long getDays() {
-        return Days;
+    public Long getTotalDays() {
+        return totalDays;
     }
 
-    public void setDays(Long days) {
-        Days = days;
+    public void setTotalDays(Long totalDays) {
+        this.totalDays = totalDays;
     }
 
     public double getTotalPrice() {
