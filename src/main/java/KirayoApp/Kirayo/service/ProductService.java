@@ -50,6 +50,10 @@ public interface ProductService {
     ProductRequestStatus getProductRequestsByRenter(String email);
 
     ProductRequestStatus getProductRequestsByRentee(String email);
+
+    ResponseStatus reserveProductPaymentIntent(String paymentData) throws IOException;
+
+    ResponseStatus getCustomerBalance(String email);
     // PAYMENT
 
 //    ResponseStatus getCustomerBalance(String email);

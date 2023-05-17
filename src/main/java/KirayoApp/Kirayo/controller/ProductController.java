@@ -174,17 +174,17 @@ public class ProductController {
 
 
     // Create a REST endpoint to handle payment intent creation
-//    @RequestMapping(value = "/payment/create-payment-intent", method = RequestMethod.POST)
-//    ResponseEntity<?> reserveProductPaymentIntent(@RequestParam("paymentData") String paymentData) throws IOException {
-//
-//        return ResponseEntity.ok(productService.reserveProductPaymentIntent(paymentData));
-//    }
+    @RequestMapping(value = "/payment/create-payment-intent", method = RequestMethod.POST)
+    ResponseEntity<?> reserveProductPaymentIntent(@RequestParam("paymentData") String paymentData) throws IOException {
 
-//    @RequestMapping(value = "/payment/getCustomerBalance", method = RequestMethod.GET)
-//    ResponseEntity<?> getCustomerBalance(@RequestParam("email") String email) throws IOException {
-//
-//        return ResponseEntity.ok(productService.getCustomerBalance(email));
-//    }
+        return ResponseEntity.ok(productService.reserveProductPaymentIntent(paymentData));
+    }
+
+    @RequestMapping(value = "/payment/getCustomerBalance", method = RequestMethod.GET)
+    ResponseEntity<?> getCustomerBalance(@RequestParam("email") String email) throws IOException {
+
+        return ResponseEntity.ok(productService.getCustomerBalance(email));
+    }
 
 
 }

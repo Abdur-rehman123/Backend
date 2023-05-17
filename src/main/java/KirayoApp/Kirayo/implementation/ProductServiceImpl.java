@@ -7,7 +7,17 @@ import KirayoApp.Kirayo.model.*;
 import KirayoApp.Kirayo.repository.*;
 import KirayoApp.Kirayo.returnStatus.*;
 import KirayoApp.Kirayo.service.ProductService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.stripe.Stripe;
+import com.stripe.exception.StripeException;
+import com.stripe.model.Charge;
+import com.stripe.model.ChargeCollection;
+import com.stripe.model.Customer;
+import com.stripe.model.PaymentIntent;
+import com.stripe.param.CustomerListParams;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,8 +52,8 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ReservationRepository reservationRepository;
 
-//    @Value("${stripe.api.secretKey}")
-//    String stripeKey;
+    @Value("${stripe.api.secretKey}")
+    String stripeKey;
 
     @Transactional
     @Override
@@ -860,98 +870,98 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
-//    // #################### PAYMENT ##########
-//
-//    public String getCustomerIdByEmail(String email) throws StripeException {
-//
-//        String customerId;
-//        email = email.replaceAll("[^a-zA-Z0-9@.]", "");
-//        CustomerListParams listParams = CustomerListParams.builder()
-//                .setEmail(email)
-//                .build();
-//        List<Customer> customers = Customer.list(listParams).getData();
-//        if (!customers.isEmpty()) {
-//            Customer customer = customers.get(0);
-//            System.out.println(customer.getId());
-//            customerId = customer.getId();
-//        } else {
-//            customerId = email;
-//        }
-//
-//        return customerId;
-//    }
-//
-//    @Override
-//    public ResponseStatus reserveProductPaymentIntent(String paymentData) throws IOException {
-//        ResponseStatus paymentResponse = new ResponseStatus();
-//        try {
-//            Stripe.apiKey = stripeKey;
-//            byte[] paymentDataBytes = paymentData.getBytes();
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            JsonNode paymentDataJson = objectMapper.readTree(paymentDataBytes);
-//
-//            Long amount = paymentDataJson.get("amount").asLong();
-//            String email = paymentDataJson.get("email").toString();
-//            try {
-//
-//                String customerId = getCustomerIdByEmail(email);
-//                System.out.println(customerId);
-//                Map<String, Object> params = new HashMap<>();
-//                params.put("amount", amount);
-//                params.put("currency", "pkr");
-//                params.put("payment_method_types", Arrays.asList("card"));
-//                params.put("return_url", "https://example.com/return");
-//                params.put("payment_method", "pm_card_visa");
-//                params.put("customer", customerId);
-//                params.put("confirm", true);
-//
-//                PaymentIntent paymentIntent = PaymentIntent.create(params);
-//                paymentResponse.setStatus(true);
-//                paymentResponse.setMessage(paymentIntent.getStatus());
-//
-//            } catch (StripeException e) {
-//                // TODO Auto-generated catch block
-//                paymentResponse.setStatus(false);
-//                paymentResponse.setMessage("Failed");
-//                System.out.println("Stripe message: " + e.getMessage());
-//            }
-//
-//        } catch (NoSuchElementException e) {
-//            paymentResponse.setStatus(false);
-//            paymentResponse.setMessage(e.getMessage());
-//        }
-//        return paymentResponse;
-//
-//    }
-//
-//    @Override
-//    public ResponseStatus getCustomerBalance(String email) {
-//        ResponseStatus responseStatus = new ResponseStatus();
-//        try {
-//            String customerId = getCustomerIdByEmail(email);
-//
-//            // Get all charges for the customer
-//            Map<String, Object> chargeParams = new HashMap<>();
-//            chargeParams.put("customer", customerId);
-//            ChargeCollection chargeCollection = Charge.list(chargeParams);
-//
-//            // Calculate the total payment amount
-//            int totalAmount = 0;
-//
-//            for (Charge charge : chargeCollection.getData()) {
-//                if (charge.getStatus().equals("succeeded")) {
-//                    totalAmount += charge.getAmount();
-//                }
-//            }
-//
-//            responseStatus.setStatus(true);
-//            responseStatus.setMessage(String.valueOf(totalAmount));
-//
-//        } catch (Exception e) {
-//            // TODO: handle exception
-//            responseStatus.setStatus(false);
-//            responseStatus.setMessage(e.getMessage());
-//        }
-//        return responseStatus;
-//    }
+    // #################### PAYMENT ##########
+
+    public String getCustomerIdByEmail(String email) throws StripeException {
+
+        String customerId;
+        email = email.replaceAll("[^a-zA-Z0-9@.]", "");
+        CustomerListParams listParams = CustomerListParams.builder()
+                .setEmail(email)
+                .build();
+        List<Customer> customers = Customer.list(listParams).getData();
+        if (!customers.isEmpty()) {
+            Customer customer = customers.get(0);
+            System.out.println(customer.getId());
+            customerId = customer.getId();
+        } else {
+            customerId = email;
+        }
+
+        return customerId;
+    }
+
+    @Override
+    public ResponseStatus reserveProductPaymentIntent(String paymentData) throws IOException {
+        ResponseStatus paymentResponse = new ResponseStatus();
+        try {
+            Stripe.apiKey = stripeKey;
+            byte[] paymentDataBytes = paymentData.getBytes();
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode paymentDataJson = objectMapper.readTree(paymentDataBytes);
+
+            Long amount = paymentDataJson.get("amount").asLong();
+            String email = paymentDataJson.get("email").toString();
+            try {
+
+                String customerId = getCustomerIdByEmail(email);
+                System.out.println(customerId);
+                Map<String, Object> params = new HashMap<>();
+                params.put("amount", amount);
+                params.put("currency", "pkr");
+                params.put("payment_method_types", Arrays.asList("card"));
+                params.put("return_url", "https://example.com/return");
+                params.put("payment_method", "pm_card_visa");
+                params.put("customer", customerId);
+                params.put("confirm", true);
+
+                PaymentIntent paymentIntent = PaymentIntent.create(params);
+                paymentResponse.setStatus(true);
+                paymentResponse.setMessage(paymentIntent.getStatus());
+
+            } catch (StripeException e) {
+                // TODO Auto-generated catch block
+                paymentResponse.setStatus(false);
+                paymentResponse.setMessage("Failed");
+                System.out.println("Stripe message: " + e.getMessage());
+            }
+
+        } catch (NoSuchElementException e) {
+            paymentResponse.setStatus(false);
+            paymentResponse.setMessage(e.getMessage());
+        }
+        return paymentResponse;
+
+    }
+
+    @Override
+    public ResponseStatus getCustomerBalance(String email) {
+        ResponseStatus responseStatus = new ResponseStatus();
+        try {
+            String customerId = getCustomerIdByEmail(email);
+
+            // Get all charges for the customer
+            Map<String, Object> chargeParams = new HashMap<>();
+            chargeParams.put("customer", customerId);
+            ChargeCollection chargeCollection = Charge.list(chargeParams);
+
+            // Calculate the total payment amount
+            int totalAmount = 0;
+
+            for (Charge charge : chargeCollection.getData()) {
+                if (charge.getStatus().equals("succeeded")) {
+                    totalAmount += charge.getAmount();
+                }
+            }
+
+            responseStatus.setStatus(true);
+            responseStatus.setMessage(String.valueOf(totalAmount));
+
+        } catch (Exception e) {
+            // TODO: handle exception
+            responseStatus.setStatus(false);
+            responseStatus.setMessage(e.getMessage());
+        }
+        return responseStatus;
+    }
 }
