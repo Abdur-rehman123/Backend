@@ -1,5 +1,6 @@
 package KirayoApp.Kirayo.returnStatus;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class ProductRequestResponse {
@@ -7,8 +8,9 @@ public class ProductRequestResponse {
     private String requestStatus;
     private Date timeStamp;
     private ProductsResponse products;
-    private Date startDate;
-    private Date endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
+    private Long Days;
     private double totalPrice;
 
     public Long getRequestId() {
@@ -43,20 +45,28 @@ public class ProductRequestResponse {
         this.products = products;
     }
 
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
+    }
+
+    public Long getDays() {
+        return Days;
+    }
+
+    public void setDays(Long days) {
+        Days = days;
     }
 
     public double getTotalPrice() {

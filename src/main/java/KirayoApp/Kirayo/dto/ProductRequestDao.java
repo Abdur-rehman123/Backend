@@ -1,12 +1,13 @@
 package KirayoApp.Kirayo.dto;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public class ProductRequestDao {
     private Long productId;
     private Date timeStamp;
-    private Date startDate;
-    private Date endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;
     private double totalPrice;
 
     public Long getProductId() {
@@ -25,19 +26,19 @@ public class ProductRequestDao {
         this.timeStamp = timeStamp;
     }
 
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 

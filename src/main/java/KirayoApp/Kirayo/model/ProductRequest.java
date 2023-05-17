@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -23,11 +24,14 @@ public class ProductRequest {
     private Date timestamp;
 
     @Column(name = "start_date")
-    private Date startDate;
+    private LocalDate startDate;
     @Column(name = "end_date")
-    private Date endDate;
+    private LocalDate endDate;
     @Column(name = "total_price")
     private double totalPrice;
+
+    @Column(name = "total_days")
+    private Long totalDays;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)

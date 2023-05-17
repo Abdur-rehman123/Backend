@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -700,6 +701,7 @@ public class ProductServiceImpl implements ProductService {
         productRequest.setTimestamp(productRequestDao.getTimeStamp());
         productRequest.setStartDate(productRequestDao.getStartDate());
         productRequest.setEndDate(productRequestDao.getEndDate());
+        productRequest.setTotalDays(ChronoUnit.DAYS.between(productRequestDao.getEndDate(),productRequestDao.getStartDate()));
         productRequest.setTotalPrice(productRequestDao.getTotalPrice());
         productRequest.setRenter(userDetails);
         productRequestRepository.save(productRequest);
@@ -750,6 +752,7 @@ public class ProductServiceImpl implements ProductService {
                 productRequestResponse.setTotalPrice(productRequest.getTotalPrice());
                 productRequestResponse.setRequestId(productRequest.getRequestId());
                 productRequestResponse.setRequestStatus(productRequest.getRequestStatus());
+                productRequestResponse.setDays(productRequest.getTotalDays());
                 productRequestResponse.setTimeStamp(productRequest.getTimestamp());
                 productRequestResponse.setProduct(getProductByProductId(savedProductIDs,productRequest.getProduct().getProductId()));
                 productRequestResponses.add(productRequestResponse);
@@ -785,6 +788,7 @@ public class ProductServiceImpl implements ProductService {
                 productRequestResponse.setTimeStamp(productRequest.getTimestamp());
                 productRequestResponse.setStartDate(productRequest.getStartDate());
                 productRequestResponse.setEndDate(productRequest.getEndDate());
+                productRequestResponse.setDays(productRequest.getTotalDays());
                 productRequestResponse.setTotalPrice(productRequest.getTotalPrice());
                 productRequestResponse.setProduct(getProductByProductId(savedProductIDs,productRequest.getProduct().getProductId()));
                 productRequestResponses.add(productRequestResponse);
